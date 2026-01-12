@@ -7,6 +7,7 @@ import { genericUnitAbi } from '../../public/abi/GenericUnit.abi'
 import { genericVaultAbi } from '../../public/abi/GenericVault.abi'
 import { chainlinkFeedAbi } from '../../public/abi/ChainlinkFeed.abi'
 import { controllerAbi } from '../../public/abi/Controller.abi'
+import { erc20Abi } from '../../public/abi/ERC20.abi'
 
 import { CONTRACTS } from '../../config/constants'
 
@@ -48,6 +49,33 @@ export async function fetchUSDSVaultTotalAssets() {
     abi: genericVaultAbi,
     functionName: 'totalAssets',
   }).then(res => Number(res) / 10 ** CONTRACTS.vaults.usds.decimals)
+}
+
+export async function fetchUSDCVaultBalance() {
+  return client.readContract({
+    address: CONTRACTS.assets.usdc.address,
+    abi: erc20Abi,
+    functionName: 'balanceOf',
+    args: [CONTRACTS.vaults.usdc.address],
+  }).then(res => Number(res) / 10 ** CONTRACTS.assets.usdc.decimals)
+}
+
+export async function fetchUSDTVaultBalance() {
+  return client.readContract({
+    address: CONTRACTS.assets.usdt.address,
+    abi: erc20Abi,
+    functionName: 'balanceOf',
+    args: [CONTRACTS.vaults.usdt.address],
+  }).then(res => Number(res) / 10 ** CONTRACTS.assets.usdt.decimals)
+}
+
+export async function fetchUSDSVaultBalance() {
+  return client.readContract({
+    address: CONTRACTS.assets.usds.address,
+    abi: erc20Abi,
+    functionName: 'balanceOf',
+    args: [CONTRACTS.vaults.usds.address],
+  }).then(res => Number(res) / 10 ** CONTRACTS.assets.usds.decimals)
 }
 
 export async function fetchUSDCPrice() {

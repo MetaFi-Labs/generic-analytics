@@ -7,6 +7,7 @@ interface VaultBalanceItemProps {
     color: string;
     icon: React.ReactNode;
     totalAssets: number;
+    vaultBalance: number;
     price: number;
     vaultSettings?: {
         maxCapacity: number;
@@ -16,7 +17,9 @@ interface VaultBalanceItemProps {
     };
 }
 
-export default function VaultBalanceItem({ symbol, name, color, icon, totalAssets, price, vaultSettings }: VaultBalanceItemProps) {
+export default function VaultBalanceItem({ symbol, name, color, icon, totalAssets, vaultBalance, price, vaultSettings }: VaultBalanceItemProps) {
+    const allocationRatio = 1 - (vaultBalance / totalAssets);
+
     return (
         <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
             <div className="flex items-center gap-3 mb-4">
@@ -47,6 +50,18 @@ export default function VaultBalanceItem({ symbol, name, color, icon, totalAsset
                 <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">Total Value</span>
                 <span className="text-xl font-bold" style={{ color: color }}>
                     ${(totalAssets * price).toLocaleString('en-US', { maximumFractionDigits: 2 })}
+                </span>
+                </div>
+            </div>
+
+            {/* Allocated Vault Balance Section */}
+            <div className="pt-2 mt-2 border-t border-zinc-200 dark:border-zinc-800">
+                <div className="flex justify-between items-center">
+                <div className="flex items-center">
+                    <span className="text-sm text-zinc-600 dark:text-zinc-400">Strategy Allocated</span>
+                </div>
+                <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                    {(allocationRatio * 100).toLocaleString('en-US', { maximumFractionDigits: 2 })}%
                 </span>
                 </div>
             </div>

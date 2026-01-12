@@ -8,6 +8,9 @@ interface VaultBalancesSectionProps {
     usdcTotalAssets: number;
     usdtTotalAssets: number;
     usdsTotalAssets: number;
+    usdcVaultBalance: number;
+    usdtVaultBalance: number;
+    usdsVaultBalance: number;
     usdcPrice: number;
     usdtPrice: number;
     usdsPrice: number;
@@ -54,6 +57,7 @@ export default function VaultBalancesSection({ initialData, colors, vaultSetting
           color={colors.usdc}
           icon="$"
           totalAssets={initialData.usdcTotalAssets}
+          vaultBalance={initialData.usdcVaultBalance}
           price={initialData.usdcPrice}
           vaultSettings={vaultSettings.usdc}
         />
@@ -63,6 +67,7 @@ export default function VaultBalancesSection({ initialData, colors, vaultSetting
           color={colors.usdt}
           icon="₮"
           totalAssets={initialData.usdtTotalAssets}
+          vaultBalance={initialData.usdtVaultBalance}
           price={initialData.usdtPrice}
           vaultSettings={vaultSettings.usdt}
         />
@@ -72,6 +77,7 @@ export default function VaultBalancesSection({ initialData, colors, vaultSetting
           color={colors.usds}
           icon="◎"
           totalAssets={initialData.usdsTotalAssets}
+          vaultBalance={initialData.usdsVaultBalance}
           price={initialData.usdsPrice}
           vaultSettings={vaultSettings.usds}
         />

@@ -25,6 +25,23 @@ export const CONTRACTS = {
       name: 'USDS Vault'
     }
   },
+  assets: {
+    usdc: {
+      address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' as const,
+      decimals: 6,
+      name: 'USD Coin'
+    },
+    usdt: {
+      address: '0xdAC17F958D2ee523a2206206994597C13D831ec7' as const,
+      decimals: 6,
+      name: 'Tether USD'
+    },
+    usds: {
+      address: '0xdC035D45d973E3EC169d2276DDab16f1e407384F' as const,
+      decimals: 18,
+      name: 'USDS Stablecoin'
+    }
+  },
   priceFeeds: {
     usdc: {
       address: '0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6' as const,
