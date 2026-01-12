@@ -3,7 +3,7 @@ import { fetchUnitTotalSupply, fetchUSDCVaultTotalAssets, fetchUSDTVaultTotalAss
 
 import ChangeInTimeBar from './components/ChangeInTimeBar'
 import UnitsInTimeLine from './components/UnitsInTimeLine'
-import VaultBalanceItem from './components/VaultBalanceItem'
+import VaultBalancesSection from './components/VaultBalancesSection'
 
 export default async function Home() {
   const [unitTotalSupply, usdcTotalAssets, usdtTotalAssets, usdsTotalAssets, usdcPrice, usdtPrice, usdsPrice] = await Promise.all([
@@ -65,35 +65,17 @@ export default async function Home() {
         </div>
 
         {/* Vault Balances Section */}
-        <div className="w-full mb-12">
-          <h2 className="text-2xl font-bold mb-6 text-zinc-900 dark:text-zinc-100">Vault Balances</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <VaultBalanceItem
-              symbol="USDC"
-              name="USD Coin"
-              color={colors.usdc}
-              icon="$"
-              totalAssets={usdcTotalAssets}
-              price={usdcPrice}
-            />
-            <VaultBalanceItem
-              symbol="USDT"
-              name="Tether"
-              color={colors.usdt}
-              icon="₮"
-              totalAssets={usdtTotalAssets}
-              price={usdtPrice}
-            />
-            <VaultBalanceItem
-              symbol="USDS"
-              name="Sky Dollar"
-              color={colors.usds}
-              icon="◎"
-              totalAssets={usdsTotalAssets}
-              price={usdsPrice}
-            />
-          </div>
-        </div>
+        <VaultBalancesSection
+          initialData={{
+            usdcTotalAssets,
+            usdtTotalAssets,
+            usdsTotalAssets,
+            usdcPrice,
+            usdtPrice,
+            usdsPrice,
+          }}
+          colors={colors}
+        />
 
         {/* Units In Time Chart Section */}
         <div className="w-full mb-12">
@@ -101,7 +83,7 @@ export default async function Home() {
             <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Unit Tokens</h2>
             {unitsExecutionEndedAt && (
               <div className="text-sm text-zinc-600 dark:text-zinc-400">
-                Last updated: {new Date(unitsExecutionEndedAt).toLocaleString()}
+                Last Dune query updated: {new Date(unitsExecutionEndedAt).toLocaleString()}
               </div>
             )}
           </div>
@@ -118,7 +100,7 @@ export default async function Home() {
             <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Daily deposits</h2>
             {depositsExecutionEndedAt && (
               <div className="text-sm text-zinc-600 dark:text-zinc-400">
-                Last updated: {new Date(depositsExecutionEndedAt).toLocaleString()}
+                Last Dune query updated: {new Date(depositsExecutionEndedAt).toLocaleString()}
               </div>
             )}
           </div>
