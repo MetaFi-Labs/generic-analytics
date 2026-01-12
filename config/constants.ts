@@ -1,4 +1,8 @@
 export const CONTRACTS = {
+  controller: {
+    address: '0x3a64D23313E1bEAABa25Ec13149bD8D514C973Ae' as const,
+    name: 'Generic Controller'
+  },
   unit: {
     address: '0x8c307baDbd78bEa5A1cCF9677caa58e7A2172502' as const,
     decimals: 18,

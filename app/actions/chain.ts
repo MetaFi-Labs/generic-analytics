@@ -6,6 +6,7 @@ import { mainnet } from 'viem/chains'
 import { genericUnitAbi } from '../../public/abi/GenericUnit.abi'
 import { genericVaultAbi } from '../../public/abi/GenericVault.abi'
 import { chainlinkFeedAbi } from '../../public/abi/ChainlinkFeed.abi'
+import { controllerAbi } from '../../public/abi/Controller.abi'
 
 import { CONTRACTS } from '../../config/constants'
 
@@ -71,4 +72,70 @@ export async function fetchUSDSPrice() {
     abi: chainlinkFeedAbi,
     functionName: 'latestRoundData',
   }).then(res => Number(res[1]) / 10 ** CONTRACTS.priceFeeds.usds.decimals)
+}
+
+export async function fetchUSDCVaultSettings() {
+    return client.readContract({
+      address: CONTRACTS.controller.address,
+      abi: controllerAbi,
+      functionName: 'vaultSettings',
+      args: [CONTRACTS.vaults.usdc.address],
+    }).then(res => ({
+      maxCapacity: Number(res[0]) / 10 ** 18,
+      minProportionality: res[1] / 100,
+      maxProportionality: res[2] / 100,
+    }))
+}
+
+export async function fetchUSDTVaultSettings() {
+    return client.readContract({
+      address: CONTRACTS.controller.address,
+      abi: controllerAbi,
+      functionName: 'vaultSettings',
+      args: [CONTRACTS.vaults.usdt.address],
+    }).then(res => ({
+      maxCapacity: Number(res[0]) / 10 ** 18,
+      minProportionality: res[1] / 100,
+      maxProportionality: res[2] / 100,
+    }))
+}
+
+export async function fetchUSDSVaultSettings() {
+    return client.readContract({
+      address: CONTRACTS.controller.address,
+      abi: controllerAbi,
+      functionName: 'vaultSettings',
+      args: [CONTRACTS.vaults.usds.address],
+    }).then(res => ({
+      maxCapacity: Number(res[0]) / 10 ** 18,
+      minProportionality: res[1] / 100,
+      maxProportionality: res[2] / 100,
+    }))
+}
+
+export async function fetchUSDCVaultAutoDepositThreshold() {
+    return client.readContract({
+      address: CONTRACTS.vaults.usdc.address,
+      abi: genericVaultAbi,
+      functionName: 'autoAllocationThreshold',
+    }).then(res => Number(res) / 10 ** CONTRACTS.vaults.usdc.decimals
+    )
+}
+
+export async function fetchUSDTVaultAutoDepositThreshold() {
+    return client.readContract({
+      address: CONTRACTS.vaults.usdt.address,
+      abi: genericVaultAbi,
+      functionName: 'autoAllocationThreshold',
+    }).then(res => Number(res) / 10 ** CONTRACTS.vaults.usdt.decimals
+    )
+}
+
+export async function fetchUSDSVaultAutoDepositThreshold() {
+    return client.readContract({
+      address: CONTRACTS.vaults.usds.address,
+      abi: genericVaultAbi,
+      functionName: 'autoAllocationThreshold',
+    }).then(res => Number(res) / 10 ** CONTRACTS.vaults.usds.decimals
+    )
 }

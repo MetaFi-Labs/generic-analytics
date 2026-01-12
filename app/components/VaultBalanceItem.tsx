@@ -1,4 +1,5 @@
 import Tooltip from './Tooltip';
+import VaultSettings from './VaultSettings';
 
 interface VaultBalanceItemProps {
     symbol: string;
@@ -7,9 +8,15 @@ interface VaultBalanceItemProps {
     icon: React.ReactNode;
     totalAssets: number;
     price: number;
+    vaultSettings?: {
+        maxCapacity: number;
+        maxProportionality: number;
+        minProportionality: number;
+        automaticDepositThreshold: number;
+    };
 }
 
-export default function VaultBalanceItem({ symbol, name, color, icon, totalAssets, price }: VaultBalanceItemProps) {
+export default function VaultBalanceItem({ symbol, name, color, icon, totalAssets, price, vaultSettings }: VaultBalanceItemProps) {
     return (
         <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
             <div className="flex items-center gap-3 mb-4">
@@ -33,6 +40,15 @@ export default function VaultBalanceItem({ symbol, name, color, icon, totalAsset
                 <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                 ${price.toFixed(4)}
                 </span>
+            </div>
+
+            <div className="pt-2 mt-2 border-t border-zinc-200 dark:border-zinc-800">
+                <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">Total Value</span>
+                <span className="text-xl font-bold" style={{ color: color }}>
+                    ${(totalAssets * price).toLocaleString('en-US', { maximumFractionDigits: 2 })}
+                </span>
+                </div>
             </div>
 
             {/* Slippage Section */}
@@ -59,14 +75,16 @@ export default function VaultBalanceItem({ symbol, name, color, icon, totalAsset
                 </div>
             </div>
 
-            <div className="pt-2 mt-2 border-t border-zinc-200 dark:border-zinc-800">
-                <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">Total Value</span>
-                <span className="text-xl font-bold" style={{ color: color }}>
-                    ${(totalAssets * price).toLocaleString('en-US', { maximumFractionDigits: 2 })}
-                </span>
-                </div>
-            </div>
+            {/* Vault Settings Section */}
+            {vaultSettings && (
+                <VaultSettings
+                    maxCapacity={vaultSettings.maxCapacity}
+                    maxProportionality={vaultSettings.maxProportionality}
+                    minProportionality={vaultSettings.minProportionality}
+                    automaticDepositThreshold={vaultSettings.automaticDepositThreshold}
+                    symbol={symbol}
+                />
+            )}
             </div>
         </div>
     )

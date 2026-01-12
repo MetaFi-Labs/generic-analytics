@@ -1,5 +1,19 @@
 import { fetchUnitsInTime, fetchDepositsInTime } from './actions/dune'
-import { fetchUnitTotalSupply, fetchUSDCVaultTotalAssets, fetchUSDTVaultTotalAssets, fetchUSDSVaultTotalAssets, fetchUSDCPrice, fetchUSDTPrice, fetchUSDSPrice } from './actions/chain'
+import {
+  fetchUnitTotalSupply,
+  fetchUSDCVaultTotalAssets,
+  fetchUSDTVaultTotalAssets,
+  fetchUSDSVaultTotalAssets,
+  fetchUSDCPrice,
+  fetchUSDTPrice,
+  fetchUSDSPrice,
+  fetchUSDCVaultSettings,
+  fetchUSDTVaultSettings,
+  fetchUSDSVaultSettings,
+  fetchUSDCVaultAutoDepositThreshold,
+  fetchUSDTVaultAutoDepositThreshold,
+  fetchUSDSVaultAutoDepositThreshold
+} from './actions/chain'
 
 import ChangeInTimeBar from './components/ChangeInTimeBar'
 import UnitsInTimeLine from './components/UnitsInTimeLine'
@@ -9,7 +23,21 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export default async function Home() {
-  const [unitTotalSupply, usdcTotalAssets, usdtTotalAssets, usdsTotalAssets, usdcPrice, usdtPrice, usdsPrice] = await Promise.all([
+  const [
+    unitTotalSupply,
+    usdcTotalAssets,
+    usdtTotalAssets,
+    usdsTotalAssets,
+    usdcPrice,
+    usdtPrice,
+    usdsPrice,
+    usdcVaultSettings,
+    usdtVaultSettings,
+    usdsVaultSettings,
+    usdcVaultAutoDepositThreshold,
+    usdtVaultAutoDepositThreshold,
+    usdsVaultAutoDepositThreshold
+] = await Promise.all([
     fetchUnitTotalSupply(),
     fetchUSDCVaultTotalAssets(),
     fetchUSDTVaultTotalAssets(),
@@ -17,6 +45,12 @@ export default async function Home() {
     fetchUSDCPrice(),
     fetchUSDTPrice(),
     fetchUSDSPrice(),
+    fetchUSDCVaultSettings(),
+    fetchUSDTVaultSettings(),
+    fetchUSDSVaultSettings(),
+    fetchUSDCVaultAutoDepositThreshold(),
+    fetchUSDTVaultAutoDepositThreshold(),
+    fetchUSDSVaultAutoDepositThreshold()
   ]);
 
   const { unitsInTime, unitsExecutionEndedAt } = await fetchUnitsInTime();
@@ -37,6 +71,28 @@ export default async function Home() {
     usdc: '#2775CA',  // USDC blue (Circle's brand color)
     usdt: '#26A17B',  // USDT green (Tether's brand color)
     usds: '#6E62E5',  // USDS purple (Sky/MakerDAO inspired)
+  }
+
+  // Vault settings (manually configured)
+  const vaultSettings = {
+    usdc: {
+      maxCapacity: usdcVaultSettings.maxCapacity,
+      maxProportionality: usdcVaultSettings.maxProportionality,
+      minProportionality: usdcVaultSettings.minProportionality,
+      automaticDepositThreshold: usdcVaultAutoDepositThreshold
+    },
+    usdt: {
+      maxCapacity: usdtVaultSettings.maxCapacity,
+      maxProportionality: usdtVaultSettings.maxProportionality,
+      minProportionality: usdtVaultSettings.minProportionality,
+      automaticDepositThreshold: usdtVaultAutoDepositThreshold
+    },
+    usds: {
+      maxCapacity: usdsVaultSettings.maxCapacity,
+      maxProportionality: usdsVaultSettings.maxProportionality,
+      minProportionality: usdsVaultSettings.minProportionality,
+      automaticDepositThreshold: usdsVaultAutoDepositThreshold
+    }
   }
 
   return (
@@ -78,6 +134,7 @@ export default async function Home() {
             usdsPrice,
           }}
           colors={colors}
+          vaultSettings={vaultSettings}
         />
 
         {/* Units In Time Chart Section */}

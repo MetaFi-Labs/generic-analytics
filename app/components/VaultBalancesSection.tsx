@@ -26,9 +26,29 @@ interface VaultBalancesSectionProps {
     usdt: string;
     usds: string;
   };
+  vaultSettings: {
+    usdc: {
+      maxCapacity: number;
+      maxProportionality: number;
+      minProportionality: number;
+      automaticDepositThreshold: number;
+    };
+    usdt: {
+      maxCapacity: number;
+      maxProportionality: number;
+      minProportionality: number;
+      automaticDepositThreshold: number;
+    };
+    usds: {
+      maxCapacity: number;
+      maxProportionality: number;
+      minProportionality: number;
+      automaticDepositThreshold: number;
+    };
+  };
 }
 
-export default function VaultBalancesSection({ initialData, colors }: VaultBalancesSectionProps) {
+export default function VaultBalancesSection({ initialData, colors, vaultSettings }: VaultBalancesSectionProps) {
   const [loading, setLoading] = useState(false);
   const [vaultData, setVaultData] = useState(initialData);
   const [lastUpdated, setLastUpdated] = useState(new Date());
@@ -80,6 +100,7 @@ export default function VaultBalancesSection({ initialData, colors }: VaultBalan
           icon="$"
           totalAssets={vaultData.usdcTotalAssets}
           price={vaultData.usdcPrice}
+          vaultSettings={vaultSettings.usdc}
         />
         <VaultBalanceItem
           symbol="USDT"
@@ -88,6 +109,7 @@ export default function VaultBalancesSection({ initialData, colors }: VaultBalan
           icon="₮"
           totalAssets={vaultData.usdtTotalAssets}
           price={vaultData.usdtPrice}
+          vaultSettings={vaultSettings.usdt}
         />
         <VaultBalanceItem
           symbol="USDS"
@@ -96,6 +118,7 @@ export default function VaultBalancesSection({ initialData, colors }: VaultBalan
           icon="◎"
           totalAssets={vaultData.usdsTotalAssets}
           price={vaultData.usdsPrice}
+          vaultSettings={vaultSettings.usds}
         />
       </div>
     </div>
