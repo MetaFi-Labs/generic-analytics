@@ -118,8 +118,7 @@ export async function fetchUSDCVaultAutoDepositThreshold() {
       address: CONTRACTS.vaults.usdc.address,
       abi: genericVaultAbi,
       functionName: 'autoAllocationThreshold',
-    }).then(res => Number(res) / 10 ** CONTRACTS.vaults.usdc.decimals
-    )
+    }).then(res => Number(res) / 10 ** CONTRACTS.vaults.usdc.decimals)
 }
 
 export async function fetchUSDTVaultAutoDepositThreshold() {
@@ -127,8 +126,7 @@ export async function fetchUSDTVaultAutoDepositThreshold() {
       address: CONTRACTS.vaults.usdt.address,
       abi: genericVaultAbi,
       functionName: 'autoAllocationThreshold',
-    }).then(res => Number(res) / 10 ** CONTRACTS.vaults.usdt.decimals
-    )
+    }).then(res => Number(res) / 10 ** CONTRACTS.vaults.usdt.decimals)
 }
 
 export async function fetchUSDSVaultAutoDepositThreshold() {
@@ -136,6 +134,5 @@ export async function fetchUSDSVaultAutoDepositThreshold() {
       address: CONTRACTS.vaults.usds.address,
       abi: genericVaultAbi,
       functionName: 'autoAllocationThreshold',
-    }).then(res => Number(res) / 10 ** CONTRACTS.vaults.usds.decimals
-    )
+    }).then(res => Number(res) / 10 ** CONTRACTS.vaults.usds.decimals)
 }
