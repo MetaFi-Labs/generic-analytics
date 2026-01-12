@@ -1,78 +1,22 @@
-import { createPublicClient, http } from 'viem'
-import { mainnet } from 'viem/chains'
-
-import { DuneClient } from "@duneanalytics/client-sdk";
-
-import { genericUnitAbi } from '../public/abi/GenericUnit.abi'
-import { genericVaultAbi } from '../public/abi/GenericVault.abi'
-import { chainlinkFeedAbi } from '../public/abi/ChainlinkFeed.abi'
+import { fetchUnitsInTime, fetchDepositsInTime } from './actions/dune'
+import { fetchUnitTotalSupply, fetchUSDCVaultTotalAssets, fetchUSDTVaultTotalAssets, fetchUSDSVaultTotalAssets, fetchUSDCPrice, fetchUSDTPrice, fetchUSDSPrice } from './actions/chain'
 
 import ChangeInTimeBar from './components/ChangeInTimeBar'
 import UnitsInTimeLine from './components/UnitsInTimeLine'
 import VaultBalanceItem from './components/VaultBalanceItem'
 
 export default async function Home() {
-  const client = createPublicClient({
-    batch: {
-      multicall: true,
-    },
-    chain: mainnet,
-    transport: http(),
-  })
-
   const [unitTotalSupply, usdcTotalAssets, usdtTotalAssets, usdsTotalAssets, usdcPrice, usdtPrice, usdsPrice] = await Promise.all([
-    client.readContract({
-      address: '0x8c307baDbd78bEa5A1cCF9677caa58e7A2172502',
-      abi: genericUnitAbi,
-      functionName: 'totalSupply',
-    }).then(res => Number(res) / 1e18), // Unit has 18 decimals
-
-    client.readContract({
-      address: '0x4825eFF24F9B7b76EEAFA2ecc6A1D5dFCb3c1c3f',
-      abi: genericVaultAbi,
-      functionName: 'totalAssets',
-    }).then(res => Number(res) / 1e6), // USDC has 6 decimals
-
-    client.readContract({
-      address: '0xB8280955aE7b5207AF4CDbdCd775135Bd38157fE',
-      abi: genericVaultAbi,
-      functionName: 'totalAssets',
-    }).then(res => Number(res) / 1e6), // USDT has 6 decimals
-
-    client.readContract({
-      address: '0x6133dA4Cd25773Ebd38542a8aCEF8F94cA89892A',
-      abi: genericVaultAbi,
-      functionName: 'totalAssets',
-    }).then(res => Number(res) / 1e18), // USDS has 18 decimals
-
-    client.readContract({
-      address: '0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6',
-      abi: chainlinkFeedAbi,
-      functionName: 'latestRoundData',
-    }).then(res => Number(res[1]) / 1e8), // Chainlink USDC/USD feed has 8 decimals
-
-    client.readContract({
-      address: '0x3E7d1eAB13ad0104d2750B8863b489D65364e32D',
-      abi: chainlinkFeedAbi,
-      functionName: 'latestRoundData',
-    }).then(res => Number(res[1]) / 1e8), // Chainlink USDT/USD feed has 8 decimals
-
-    client.readContract({
-      address: '0xfF30586cD0F29eD462364C7e81375FC0C71219b1',
-      abi: chainlinkFeedAbi,
-      functionName: 'latestRoundData',
-    }).then(res => Number(res[1]) / 1e8), // Chainlink USDS/USD feed has 8 decimals
+    fetchUnitTotalSupply(),
+    fetchUSDCVaultTotalAssets(),
+    fetchUSDTVaultTotalAssets(),
+    fetchUSDSVaultTotalAssets(),
+    fetchUSDCPrice(),
+    fetchUSDTPrice(),
+    fetchUSDSPrice(),
   ]);
 
-  const dune = new DuneClient(process.env.DUNE_API_PREVIEW_KEY!);
-
-  const unitsInTime = await dune.getLatestResult({queryId: 6283930}).then(res =>
-    res.result?.rows.map(row => ({
-      x: new Date(String(row.time)).toLocaleDateString(),
-      y: (Number(row.cum) / 1e18).toFixed(0), // Unit has 18 decimals
-    }))
-  ) || [];
-
+  const { unitsInTime, unitsExecutionEndedAt } = await fetchUnitsInTime();
   const unitsInTimeData = [
     {
       id: 'Unit Tokens',
@@ -81,17 +25,10 @@ export default async function Home() {
     }
   ];
 
-  const depositsInTime = await dune.getLatestResult({queryId: 6284260}).then(res =>
-    res.result?.rows.map(row => ({
-      time: new Date(String(row.time)).toLocaleDateString(),
-      usdc: (Number(row.usdc) / 1e6).toFixed(0), // USDC has 6 decimals
-      usdt: (Number(row.usdt) / 1e6).toFixed(0), // USDT has 6 decimals
-      usds: (Number(row.usds) / 1e18).toFixed(0), // USDS has 18 decimals
-    }))
-  ) || [];
+  const { depositsInTime, depositsExecutionEndedAt } = await fetchDepositsInTime();
 
   const totalVaultValue = usdcTotalAssets * usdcPrice + usdtTotalAssets * usdtPrice + usdsTotalAssets * usdsPrice;
-  const overcollateralization = (totalVaultValue / unitTotalSupply * 100);
+  const overcollateralization = (totalVaultValue * 100 / unitTotalSupply);
 
   const colors = {
     usdc: '#2775CA',  // USDC blue (Circle's brand color)
@@ -160,7 +97,14 @@ export default async function Home() {
 
         {/* Units In Time Chart Section */}
         <div className="w-full mb-12">
-          <h2 className="text-2xl font-bold mb-6 text-zinc-900 dark:text-zinc-100">Unit Tokens</h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Unit Tokens</h2>
+            {unitsExecutionEndedAt && (
+              <div className="text-sm text-zinc-600 dark:text-zinc-400">
+                Last updated: {new Date(unitsExecutionEndedAt).toLocaleString()}
+              </div>
+            )}
+          </div>
           <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm">
             <div style={{ height: '400px', width: '100%' }}>
               <UnitsInTimeLine data={unitsInTimeData} />
@@ -170,7 +114,14 @@ export default async function Home() {
 
         {/* Historical Chart Section */}
         <div className="w-full">
-          <h2 className="text-2xl font-bold mb-6 text-zinc-900 dark:text-zinc-100">Daily deposits</h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Daily deposits</h2>
+            {depositsExecutionEndedAt && (
+              <div className="text-sm text-zinc-600 dark:text-zinc-400">
+                Last updated: {new Date(depositsExecutionEndedAt).toLocaleString()}
+              </div>
+            )}
+          </div>
           <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm">
             <div style={{ height: '400px', width: '100%' }}>
               <ChangeInTimeBar
