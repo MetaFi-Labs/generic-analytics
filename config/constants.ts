@@ -12,17 +12,32 @@ export const CONTRACTS = {
     usdc: {
       address: '0x4825eFF24F9B7b76EEAFA2ecc6A1D5dFCb3c1c3f' as const,
       decimals: 6,
-      name: 'USDC Vault'
+      name: 'USDC Vault',
+      symbol: 'USDC',
+      displayName: 'USD Coin',
+      icon: '$',
+      color: '#2775CA',
+      strategyAddress: '0xBEEF01735c132Ada46AA9aA4c54623cAA92A64CB' as const
     },
     usdt: {
       address: '0xB8280955aE7b5207AF4CDbdCd775135Bd38157fE' as const,
       decimals: 6,
-      name: 'USDT Vault'
+      name: 'USDT Vault',
+      symbol: 'USDT',
+      displayName: 'Tether',
+      icon: '₮',
+      color: '#26A17B',
+      strategyAddress: '0xbEef047a543E45807105E51A8BBEFCc5950fcfBa' as const
     },
     usds: {
       address: '0x6133dA4Cd25773Ebd38542a8aCEF8F94cA89892A' as const,
       decimals: 18,
-      name: 'USDS Vault'
+      name: 'USDS Vault',
+      symbol: 'USDS',
+      displayName: 'Sky Dollar',
+      icon: '◎',
+      color: '#6E62E5',
+      strategyAddress: '0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD' as const
     }
   },
   assets: {

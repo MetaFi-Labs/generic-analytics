@@ -21,6 +21,7 @@ import {
 import ChangeInTimeBar from './components/ChangeInTimeBar'
 import UnitsInTimeLine from './components/UnitsInTimeLine'
 import VaultBalancesSection from './components/VaultBalancesSection'
+import { buildVaultConfigs, getVaultColors } from './utils/vaults'
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -66,7 +67,7 @@ export default async function Home() {
   const unitsInTimeData = [
     {
       id: 'Unit Tokens',
-      color: '#8b5cf6', // Purple color for units
+      color: '#3F79FF',
       data: unitsInTime
     }
   ]
@@ -76,43 +77,59 @@ export default async function Home() {
   const totalVaultValue = usdcTotalAssets * usdcPrice + usdtTotalAssets * usdtPrice + usdsTotalAssets * usdsPrice
   const overcollateralization = (totalVaultValue * 100 / unitTotalSupply)
 
-  const vaultSettings = {
-    usdc: {
-      maxCapacity: usdcVaultSettings.maxCapacity,
-      maxProportionality: usdcVaultSettings.maxProportionality,
-      minProportionality: usdcVaultSettings.minProportionality,
-      automaticDepositThreshold: usdcVaultAutoDepositThreshold
+  // Build vault configurations using the new utility
+  const vaults = buildVaultConfigs(
+    {
+      usdc: {
+        totalAssets: usdcTotalAssets,
+        vaultBalance: usdcVaultBalance,
+        price: usdcPrice
+      },
+      usdt: {
+        totalAssets: usdtTotalAssets,
+        vaultBalance: usdtVaultBalance,
+        price: usdtPrice
+      },
+      usds: {
+        totalAssets: usdsTotalAssets,
+        vaultBalance: usdsVaultBalance,
+        price: usdsPrice
+      }
     },
-    usdt: {
-      maxCapacity: usdtVaultSettings.maxCapacity,
-      maxProportionality: usdtVaultSettings.maxProportionality,
-      minProportionality: usdtVaultSettings.minProportionality,
-      automaticDepositThreshold: usdtVaultAutoDepositThreshold
-    },
-    usds: {
-      maxCapacity: usdsVaultSettings.maxCapacity,
-      maxProportionality: usdsVaultSettings.maxProportionality,
-      minProportionality: usdsVaultSettings.minProportionality,
-      automaticDepositThreshold: usdsVaultAutoDepositThreshold
+    {
+      usdc: {
+        maxCapacity: usdcVaultSettings.maxCapacity,
+        maxProportionality: usdcVaultSettings.maxProportionality,
+        minProportionality: usdcVaultSettings.minProportionality,
+        automaticDepositThreshold: usdcVaultAutoDepositThreshold
+      },
+      usdt: {
+        maxCapacity: usdtVaultSettings.maxCapacity,
+        maxProportionality: usdtVaultSettings.maxProportionality,
+        minProportionality: usdtVaultSettings.minProportionality,
+        automaticDepositThreshold: usdtVaultAutoDepositThreshold
+      },
+      usds: {
+        maxCapacity: usdsVaultSettings.maxCapacity,
+        maxProportionality: usdsVaultSettings.maxProportionality,
+        minProportionality: usdsVaultSettings.minProportionality,
+        automaticDepositThreshold: usdsVaultAutoDepositThreshold
+      }
     }
-  }
+  )
 
-  const colors = {
-    usdc: '#2775CA',  // USDC blue (Circle's brand color)
-    usdt: '#26A17B',  // USDT green (Tether's brand color)
-    usds: '#6E62E5',  // USDS purple (Sky/MakerDAO inspired)
-  }
+  const colors = getVaultColors()
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-zinc-900">
       <main className="flex min-h-screen w-full max-w-6xl flex-col items-center py-12 px-6 bg-white dark:bg-black sm:items-start">
         <div className="w-full mb-12">
-          <h1 className="text-4xl font-bold mb-2 text-zinc-900 dark:text-zinc-100">Analytics Dashboard</h1>
+          <h1 className="text-4xl font-bold mb-2 text-zinc-900 dark:text-zinc-100">Generic Internal Analytics</h1>
         </div>
 
         {/* Total Unit Tokens Section */}
         <div className="w-full mb-12">
-          <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl p-8 shadow-lg">
+          <div className="bg-gradient-to-br from-[#3F79FF] to-[#3F79FF]/70 rounded-2xl p-8 shadow-lg">
             <div className="text-white/80 text-sm font-medium mb-2">Total Unit Tokens</div>
             <div className="text-white text-5xl font-bold mb-4">
               {unitTotalSupply.toLocaleString('en-US', { maximumFractionDigits: 2 })}
@@ -132,21 +149,7 @@ export default async function Home() {
         </div>
 
         {/* Vault Balances Section */}
-        <VaultBalancesSection
-          initialData={{
-            usdcTotalAssets,
-            usdtTotalAssets,
-            usdsTotalAssets,
-            usdcVaultBalance,
-            usdtVaultBalance,
-            usdsVaultBalance,
-            usdcPrice,
-            usdtPrice,
-            usdsPrice,
-          }}
-          colors={colors}
-          vaultSettings={vaultSettings}
-        />
+        <VaultBalancesSection vaults={vaults} />
 
         {/* Units In Time Chart Section */}
         <div className="w-full mb-12">

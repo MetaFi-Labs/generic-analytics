@@ -15,9 +15,12 @@ interface VaultBalanceItemProps {
         minProportionality: number;
         automaticDepositThreshold: number;
     };
+    strategyAddress: string;
+    vaultAddress: string;
+    showBasicInfoOnly?: boolean;
 }
 
-export default function VaultBalanceItem({ symbol, name, color, icon, totalAssets, vaultBalance, price, vaultSettings }: VaultBalanceItemProps) {
+export default function VaultBalanceItem({ symbol, name, color, icon, totalAssets, vaultBalance, price, vaultSettings, strategyAddress, vaultAddress, showBasicInfoOnly }: VaultBalanceItemProps) {
     const allocationRatio = 1 - (vaultBalance / totalAssets);
 
     return (
@@ -54,44 +57,79 @@ export default function VaultBalanceItem({ symbol, name, color, icon, totalAsset
                 </div>
             </div>
 
-            {/* Allocated Vault Balance Section */}
-            <div className="pt-2 mt-2 border-t border-zinc-200 dark:border-zinc-800">
-                <div className="flex justify-between items-center">
-                <div className="flex items-center">
-                    <span className="text-sm text-zinc-600 dark:text-zinc-400">Strategy Allocated</span>
-                </div>
-                <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                    {(allocationRatio * 100).toLocaleString('en-US', { maximumFractionDigits: 2 })}%
-                </span>
-                </div>
-            </div>
-
-            {/* Slippage Section */}
+            {/* Strategy Section */}
             <div className="pt-2 mt-2 border-t border-zinc-200 dark:border-zinc-800">
                 <div className="space-y-1.5">
                 <div className="flex justify-between items-center">
                     <div className="flex items-center">
-                        <span className="text-xs text-zinc-500 dark:text-zinc-400">Deposit Slippage</span>
-                        <Tooltip text="User $ loss when minting GUSD" />
+                        <span className="text-sm text-zinc-600 dark:text-zinc-400">Strategy Allocated</span>
                     </div>
-                    <span className={`text-xs font-medium text-zinc-500 dark:text-zinc-400`}>
-                    {(price <= 1 ? 0 : (price - 1) * 100).toFixed(4)}%
+                    <span className={`text-sm font-medium text-zinc-700 dark:text-zinc-300`}>
+                    {(allocationRatio * 100).toLocaleString('en-US', { maximumFractionDigits: 2 })}%
                     </span>
                 </div>
                 <div className="flex justify-between items-center">
                     <div className="flex items-center">
-                        <span className="text-xs text-zinc-500 dark:text-zinc-400">Redeem Slippage</span>
-                        <Tooltip text="User $ loss when redeeming GUSD." />
+                        <span className="text-sm text-zinc-600 dark:text-zinc-400">Strategy Address</span>
                     </div>
-                    <span className={`text-xs font-medium text-zinc-500 dark:text-zinc-400`}>
-                    {(price >= 1 ? 0 : (1 - price) * 100).toFixed(4)}%
-                    </span>
+                    <a
+                        href={`https://etherscan.io/address/${strategyAddress}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm font-mono text-blue-600 dark:text-blue-400 hover:underline"
+                    >
+                        {strategyAddress.slice(0, 6)}...{strategyAddress.slice(-4)}
+                    </a>
                 </div>
                 </div>
             </div>
 
-            {/* Vault Settings Section */}
-            {vaultSettings && (
+            {/* Vault Address Section */}
+            <div className="pt-2 mt-2 border-t border-zinc-200 dark:border-zinc-800">
+                <div className="space-y-1.5"></div>
+                <div className="flex justify-between items-center">
+                    <div className="flex items-center">
+                        <span className="text-sm text-zinc-600 dark:text-zinc-400">Vault Address</span>
+                    </div>
+                    <a
+                        href={`https://etherscan.io/address/${vaultAddress}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm font-mono text-blue-600 dark:text-blue-400 hover:underline"
+                    >
+                        {vaultAddress.slice(0, 6)}...{vaultAddress.slice(-4)}
+                    </a>
+                </div>
+            </div>
+
+            {/* Slippage Section - Only show if not in basic info mode */}
+            {!showBasicInfoOnly && (
+                <div className="pt-2 mt-2 border-t border-zinc-200 dark:border-zinc-800">
+                    <div className="space-y-1.5">
+                    <div className="flex justify-between items-center">
+                        <div className="flex items-center">
+                            <span className="text-xs text-zinc-500 dark:text-zinc-400">Deposit Slippage</span>
+                            <Tooltip text="User $ loss when minting GUSD" />
+                        </div>
+                        <span className={`text-xs font-medium text-zinc-500 dark:text-zinc-400`}>
+                        {(price <= 1 ? 0 : (price - 1) * 100).toFixed(4)}%
+                        </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                        <div className="flex items-center">
+                            <span className="text-xs text-zinc-500 dark:text-zinc-400">Redeem Slippage</span>
+                            <Tooltip text="User $ loss when redeeming GUSD." />
+                        </div>
+                        <span className={`text-xs font-medium text-zinc-500 dark:text-zinc-400`}>
+                        {(price >= 1 ? 0 : (1 - price) * 100).toFixed(4)}%
+                        </span>
+                    </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Vault Settings Section - Only show if not in basic info mode and settings exist */}
+            {!showBasicInfoOnly && vaultSettings && (
                 <VaultSettings
                     maxCapacity={vaultSettings.maxCapacity}
                     maxProportionality={vaultSettings.maxProportionality}
