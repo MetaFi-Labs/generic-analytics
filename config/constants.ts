@@ -1,12 +1,9 @@
 export const CONTRACTS = {
   controller: {
     address: '0x3a64D23313E1bEAABa25Ec13149bD8D514C973Ae' as const,
-    name: 'Generic Controller'
   },
-  unit: {
-    address: '0x8c307baDbd78bEa5A1cCF9677caa58e7A2172502' as const,
-    decimals: 18,
-    name: 'Generic Unit'
+  bridgeCoordinator: {
+    address: '0x0503F2C5A1a4b72450c6Cfa790F2097CF5cB6a01' as const,
   },
   vaults: {
     usdc: {
@@ -41,6 +38,11 @@ export const CONTRACTS = {
     }
   },
   assets: {
+    unit: {
+      address: '0x8c307baDbd78bEa5A1cCF9677caa58e7A2172502' as const,
+      decimals: 18,
+      name: 'Generic Unit'
+    },
     usdc: {
       address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' as const,
       decimals: 6,
@@ -73,10 +75,23 @@ export const CONTRACTS = {
       decimals: 8,
       name: 'USDS/USD Chainlink Feed'
     }
+  },
+  predeposits: {
+    status: {
+      name: 'Status',
+      nickname: '0xa4fdc657c7ba2402ba336e88c4ae1c72169f7bc116987c8aefd50982676d9a17' as const,
+    },
+    citrea: {
+      name: 'Citrea',
+      nickname: '0x5d8f3ef2cb4337c01981e156bbfbf58e6df65b10a2ce34e33777dbb3ad8e7d2f' as const,
+    }
   }
 } as const
 
 export const DUNE_QUERIES = {
   unitsInTime: 6283930,
-  depositsInTime: 6284260
+  depositsInTime: 6284260,
+  yieldInTime: 6535475,
+  rebalancesInTime: 6535593,
+  predepositsInTime: 6535610
 } as const
