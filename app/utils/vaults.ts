@@ -50,9 +50,9 @@ export function getVaultAddresses(): VaultsMap<string> {
  */
 export function getStrategyAddresses(): VaultsMap<string> {
   return {
-    usdc: CONTRACTS.vaults.usdc.strategyAddress,
-    usdt: CONTRACTS.vaults.usdt.strategyAddress,
-    usds: CONTRACTS.vaults.usds.strategyAddress,
+    usdc: CONTRACTS.vaults.usdc.strategy.address,
+    usdt: CONTRACTS.vaults.usdt.strategy.address,
+    usds: CONTRACTS.vaults.usds.strategy.address,
   };
 }
 

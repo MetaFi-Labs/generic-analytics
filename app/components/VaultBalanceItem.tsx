@@ -20,7 +20,7 @@ interface VaultBalanceItemProps {
     showBasicInfoOnly?: boolean;
 }
 
-export default function VaultBalanceItem({ symbol, name, color, icon, totalAssets, vaultBalance, price, vaultSettings, strategyAddress, vaultAddress, showBasicInfoOnly }: VaultBalanceItemProps) {
+export default function VaultBalanceItem({ symbol, name, color, icon, totalAssets, vaultBalance, price, availableLiquidity, vaultSettings, strategyAddress, vaultAddress, showBasicInfoOnly }: VaultBalanceItemProps) {
     const allocationRatio = 1 - (vaultBalance / totalAssets);
 
     return (
@@ -66,6 +66,15 @@ export default function VaultBalanceItem({ symbol, name, color, icon, totalAsset
                     </div>
                     <span className={`text-sm font-medium text-zinc-700 dark:text-zinc-300`}>
                     {(allocationRatio * 100).toLocaleString('en-US', { maximumFractionDigits: 2 })}%
+                    </span>
+                </div>
+                <div className="flex justify-between items-center">
+                    <div className="flex items-center">
+                        <span className="text-sm text-zinc-600 dark:text-zinc-400">Available Liquidity</span>
+                    </div>
+                    <span className={`text-sm font-medium text-zinc-700 dark:text-zinc-300`}>
+                    {(availableLiquidity / totalAssets * 100).toLocaleString('en-US', { maximumFractionDigits: 2 })}%
+                    ({availableLiquidity.toLocaleString('en-US', { maximumFractionDigits: 2 })})
                     </span>
                 </div>
                 <div className="flex justify-between items-center">

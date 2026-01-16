@@ -19,3 +19,12 @@ export async function fetchAutoDepositThreshold(vault: VaultContract) {
       functionName: 'autoAllocationThreshold',
     }).then(res => Number(res) / 10 ** vault.decimals)
 }
+
+export async function fetchAdditionalAvailableAssets(vault: VaultContract, strategy: VaultContract) {
+    return client.readContract({
+      address: strategy.address,
+      abi: genericVaultAbi,
+      functionName: 'maxWithdraw',
+      args: [vault.address],
+    }).then(res => Number(res) / 10 ** strategy.decimals)
+}

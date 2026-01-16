@@ -28,6 +28,7 @@ export default function VaultBalancesSection({ vaults, showBasicInfoOnly }: Vaul
             totalAssets={data.totalAssets}
             vaultBalance={data.vaultBalance}
             price={data.price}
+            availableLiquidity={data.availableLiquidity}
             vaultSettings={settings}
             strategyAddress={strategyAddress}
             vaultAddress={vaultAddress}

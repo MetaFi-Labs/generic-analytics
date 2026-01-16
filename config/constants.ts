@@ -18,7 +18,10 @@ export const CONTRACTS = {
       displayName: 'USD Coin',
       icon: '$',
       color: '#2775CA',
-      strategyAddress: '0xBEEF01735c132Ada46AA9aA4c54623cAA92A64CB' as const
+      strategy: {
+        address: '0xBEEF01735c132Ada46AA9aA4c54623cAA92A64CB' as const,
+        decimals: 6,
+      } as VaultContract,
     },
     usdt: {
       address: '0xB8280955aE7b5207AF4CDbdCd775135Bd38157fE' as const,
@@ -28,7 +31,10 @@ export const CONTRACTS = {
       displayName: 'Tether',
       icon: '₮',
       color: '#26A17B',
-      strategyAddress: '0xbEef047a543E45807105E51A8BBEFCc5950fcfBa' as const
+      strategy: {
+        address: '0xbEef047a543E45807105E51A8BBEFCc5950fcfBa' as const,
+        decimals: 6,
+      } as VaultContract,
     },
     usds: {
       address: '0x6133dA4Cd25773Ebd38542a8aCEF8F94cA89892A' as const,
@@ -38,7 +44,10 @@ export const CONTRACTS = {
       displayName: 'Sky Dollar',
       icon: '◎',
       color: '#6E62E5',
-      strategyAddress: '0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD' as const
+      strategy: {
+        address: '0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD' as const,
+        decimals: 18,
+      } as VaultContract,
     }
   } as VaultsMap<VaultContract> | VaultsMap<any>,
   assets: {

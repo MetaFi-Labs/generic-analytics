@@ -25,6 +25,7 @@ export interface VaultData {
   totalAssets: number;
   vaultBalance: number;
   price: number;
+  availableLiquidity: number;
 }
 
 export interface VaultConfig {
