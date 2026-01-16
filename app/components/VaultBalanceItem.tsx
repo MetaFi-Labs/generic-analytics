@@ -117,7 +117,7 @@ export default function VaultBalanceItem({ symbol, name, color, icon, totalAsset
                     <div className="space-y-1.5">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center">
-                            <span className="text-xs text-zinc-500 dark:text-zinc-400">Deposit Slippage</span>
+                            <span className="text-xs text-zinc-500 dark:text-zinc-400">Mint Slippage</span>
                             <Tooltip text="User $ loss when minting GUSD" />
                         </div>
                         <span className={`text-xs font-medium text-zinc-500 dark:text-zinc-400`}>
