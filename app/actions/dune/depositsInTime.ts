@@ -1,6 +1,6 @@
 'use server'
 
-import { fetchDune } from './client'
+import { fetchDune } from './fetchDune'
 import { DUNE_QUERIES, CONTRACTS } from '@/config/constants'
 
 export async function fetchDepositsInTime() {
