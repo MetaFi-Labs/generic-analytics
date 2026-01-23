@@ -35,6 +35,8 @@ export default async function Home() {
     usdcPrice,
     usdtPrice,
     usdsPrice,
+    // bridgeCoordinator
+    totalPredeposits,
 ] = await Promise.all([
     rpc.fetchTotalSupply(CONTRACTS.assets.unit),
     rpc.fetchBalanceOf(CONTRACTS.assets.usdc, CONTRACTS.vaults.usdc.address),
@@ -58,6 +60,8 @@ export default async function Home() {
     rpc.fetchPrice(CONTRACTS.priceFeeds.usdc),
     rpc.fetchPrice(CONTRACTS.priceFeeds.usdt),
     rpc.fetchPrice(CONTRACTS.priceFeeds.usds),
+
+    rpc.fetchTotalPredeposits(CONTRACTS.predeposits.status.nickname),
   ])
 
   const unitsInTime = await dune.fetchUnitsInTime()
@@ -142,6 +146,23 @@ export default async function Home() {
               <div>
                 <span className="text-sm">Total Yield: </span>
                 <span className="text-xl font-semibold">${Number(totalYield).toFixed(4)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Status Predeposits Section */}
+        <div className="w-full mb-12">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Predeposits</h2>
+          </div>
+          <div className="max-w-xs bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm">
+            <div className="flex items-center gap-4">
+              <div>
+                <div className="text-zinc-600 dark:text-zinc-400 text-sm font-medium mb-1">Status</div>
+                <div className="text-zinc-900 dark:text-zinc-100 text-3xl font-bold">
+                  {totalPredeposits.toLocaleString('en-US', { maximumFractionDigits: 2 })}
+                </div>
               </div>
             </div>
           </div>
