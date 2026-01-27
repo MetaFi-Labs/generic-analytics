@@ -4,107 +4,123 @@ import { PriceFeedKey } from '@/app/types/priceFeeds';
 import { Contract, ValueContract } from '@/app/types/common';
 
 export const CONTRACTS = {
-  controller: {
-    address: '0x3a64D23313E1bEAABa25Ec13149bD8D514C973Ae' as const,
-  } as Contract,
-  bridgeCoordinator: {
-    address: '0x0503F2C5A1a4b72450c6Cfa790F2097CF5cB6a01' as const,
-  } as Contract,
-  vaults: {
-    usdc: {
-      address: '0x4825eFF24F9B7b76EEAFA2ecc6A1D5dFCb3c1c3f' as const,
-      decimals: 6,
-      strategy: {
-        address: '0xBEEF01735c132Ada46AA9aA4c54623cAA92A64CB' as const,
+  ethereum: {
+    controller: {
+      address: '0x3a64D23313E1bEAABa25Ec13149bD8D514C973Ae' as const,
+    } as Contract,
+    bridgeCoordinator: {
+      address: '0x0503F2C5A1a4b72450c6Cfa790F2097CF5cB6a01' as const,
+    } as Contract,
+    vaults: {
+      usdc: {
+        address: '0x4825eFF24F9B7b76EEAFA2ecc6A1D5dFCb3c1c3f' as const,
         decimals: 6,
-      } as ValueContract,
-    },
-    usdt: {
-      address: '0xB8280955aE7b5207AF4CDbdCd775135Bd38157fE' as const,
-      decimals: 6,
-      strategy: {
-        address: '0xbEef047a543E45807105E51A8BBEFCc5950fcfBa' as const,
+        strategy: {
+          address: '0xBEEF01735c132Ada46AA9aA4c54623cAA92A64CB' as const,
+          decimals: 6,
+        } as ValueContract,
+      },
+      usdt: {
+        address: '0xB8280955aE7b5207AF4CDbdCd775135Bd38157fE' as const,
         decimals: 6,
-      } as ValueContract,
-    },
-    usds: {
-      address: '0x6133dA4Cd25773Ebd38542a8aCEF8F94cA89892A' as const,
-      decimals: 18,
-      strategy: {
-        address: '0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD' as const,
+        strategy: {
+          address: '0xbEef047a543E45807105E51A8BBEFCc5950fcfBa' as const,
+          decimals: 6,
+        } as ValueContract,
+      },
+      usds: {
+        address: '0x6133dA4Cd25773Ebd38542a8aCEF8F94cA89892A' as const,
         decimals: 18,
-      } as ValueContract,
-    }
-  } as Record<VaultKey, VaultContract>,
-  assets: {
-    unit: {
-      address: '0x8c307baDbd78bEa5A1cCF9677caa58e7A2172502' as const,
-      decimals: 18,
-      metadata: {
-        iconSrc: '/img/gusd.png',
-        symbol: 'GUSD',
-        name: 'Generic Unit',
-        color: '#3F79FF',
+        strategy: {
+          address: '0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD' as const,
+          decimals: 18,
+        } as ValueContract,
       }
-    },
-    usdc: {
-      address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' as const,
-      decimals: 6,
-      metadata: {
-        iconSrc: '/img/usdc.png',
-        symbol: 'USDC',
-        name: 'USD Coin',
-        color: '#2775CA',
+    } as Record<VaultKey, VaultContract>,
+    assets: {
+      unit: {
+        address: '0x8c307baDbd78bEa5A1cCF9677caa58e7A2172502' as const,
+        decimals: 18,
+        metadata: {
+          iconSrc: '/img/gusd.png',
+          symbol: 'GUSD',
+          name: 'Generic Unit',
+          color: '#3F79FF',
+        }
+      },
+      usdc: {
+        address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' as const,
+        decimals: 6,
+        metadata: {
+          iconSrc: '/img/usdc.png',
+          symbol: 'USDC',
+          name: 'USD Coin',
+          color: '#2775CA',
+        }
+      },
+      usdt: {
+        address: '0xdAC17F958D2ee523a2206206994597C13D831ec7' as const,
+        decimals: 6,
+        metadata: {
+          iconSrc: '/img/usdt.png',
+          symbol: 'USDT',
+          name: 'Tether USD',
+          color: '#26A17B',
+        }
+      },
+      usds: {
+        address: '0xdC035D45d973E3EC169d2276DDab16f1e407384F' as const,
+        decimals: 18,
+        metadata: {
+          iconSrc: '/img/usds.png',
+          symbol: 'USDS',
+          name: 'USDS Stablecoin',
+          color: '#F4B731',
+        }
       }
-    },
-    usdt: {
-      address: '0xdAC17F958D2ee523a2206206994597C13D831ec7' as const,
-      decimals: 6,
-      metadata: {
-        iconSrc: '/img/usdt.png',
-        symbol: 'USDT',
-        name: 'Tether USD',
-        color: '#26A17B',
+    } as Record<AssetKey, AssetContract>,
+    priceFeeds: {
+      usdc: {
+        address: '0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6' as const,
+        decimals: 8,
+        name: 'USDC/USD Chainlink Feed'
+      },
+      usdt: {
+        address: '0x3E7d1eAB13ad0104d2750B8863b489D65364e32D' as const,
+        decimals: 8,
+        name: 'USDT/USD Chainlink Feed'
+      },
+      usds: {
+        address: '0xfF30586cD0F29eD462364C7e81375FC0C71219b1' as const,
+        decimals: 8,
+        name: 'USDS/USD Chainlink Feed'
       }
-    },
-    usds: {
-      address: '0xdC035D45d973E3EC169d2276DDab16f1e407384F' as const,
-      decimals: 18,
-      metadata: {
-        iconSrc: '/img/usds.png',
-        symbol: 'USDS',
-        name: 'USDS Stablecoin',
-        color: '#F4B731',
+    } as Record<PriceFeedKey, ValueContract>,
+    predeposits: {
+      status: {
+        name: 'Status',
+        nickname: '0xa4fdc657c7ba2402ba336e88c4ae1c72169f7bc116987c8aefd50982676d9a17' as const,
+      },
+      citrea: {
+        name: 'Citrea',
+        nickname: '0x5d8f3ef2cb4337c01981e156bbfbf58e6df65b10a2ce34e33777dbb3ad8e7d2f' as const,
       }
     }
-  } as Record<AssetKey, AssetContract>,
-  priceFeeds: {
-    usdc: {
-      address: '0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6' as const,
-      decimals: 8,
-      name: 'USDC/USD Chainlink Feed'
+  },
+  citrea: {
+    assets: {
+      unit: {
+        address: '0xd4AB6BA9764163f9B567A314999ad0F2ad66668C' as const,
+        decimals: 18,
+        metadata: {
+          iconSrc: '/img/gusd.png',
+          symbol: 'GUSD',
+          name: 'Generic Unit',
+          color: '#3F79FF',
+        }
+      } as AssetContract,
     },
-    usdt: {
-      address: '0x3E7d1eAB13ad0104d2750B8863b489D65364e32D' as const,
-      decimals: 8,
-      name: 'USDT/USD Chainlink Feed'
-    },
-    usds: {
-      address: '0xfF30586cD0F29eD462364C7e81375FC0C71219b1' as const,
-      decimals: 8,
-      name: 'USDS/USD Chainlink Feed'
-    }
-  } as Record<PriceFeedKey, ValueContract>,
-  predeposits: {
-    status: {
-      name: 'Status',
-      nickname: '0xa4fdc657c7ba2402ba336e88c4ae1c72169f7bc116987c8aefd50982676d9a17' as const,
-    },
-    citrea: {
-      name: 'Citrea',
-      nickname: '0x5d8f3ef2cb4337c01981e156bbfbf58e6df65b10a2ce34e33777dbb3ad8e7d2f' as const,
-    }
-  }
+  },
 } as const
 
 export const DUNE_QUERIES = {

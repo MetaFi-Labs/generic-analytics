@@ -15,12 +15,12 @@ export async function fetchRebalancesInTime() {
 
 function getVaultDecimals(vault: `0x${string}`) {
   switch (vault) {
-    case CONTRACTS.vaults.usdc.address:
-      return CONTRACTS.vaults.usdc.decimals
-    case CONTRACTS.vaults.usdt.address:
-      return CONTRACTS.vaults.usdt.decimals
-    case CONTRACTS.vaults.usds.address:
-      return CONTRACTS.vaults.usds.decimals
+    case CONTRACTS.ethereum.vaults.usdc.address:
+      return CONTRACTS.ethereum.vaults.usdc.decimals
+    case CONTRACTS.ethereum.vaults.usdt.address:
+      return CONTRACTS.ethereum.vaults.usdt.decimals
+    case CONTRACTS.ethereum.vaults.usds.address:
+      return CONTRACTS.ethereum.vaults.usds.decimals
     default:
       return 0
   }

@@ -1,10 +1,12 @@
-import { createPublicClient, http } from 'viem'
+import { Chain, createPublicClient, http } from 'viem'
 import { mainnet } from 'viem/chains'
 
-export const client = createPublicClient({
-  batch: {
-    multicall: true,
-  },
-  chain: mainnet,
-  transport: http('https://ethereum.publicnode.com'),
-})
+export function getClient(chain: Chain = mainnet) {
+  return createPublicClient({
+    batch: {
+      multicall: true,
+    },
+    chain: chain,
+    transport: http(chain == mainnet ? 'https://ethereum.publicnode.com' : chain.rpcUrls.default.http[0]),
+  })
+}

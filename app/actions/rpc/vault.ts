@@ -1,11 +1,11 @@
 'use server'
 
-import { client } from './client'
+import { getClient } from './client'
 import { genericVaultAbi } from '@/public/abi/GenericVault.abi'
 import { VaultContract } from '@/app/types/vaults'
 
 export async function fetchTotalAssets(vault: VaultContract) {
-  return client.readContract({
+  return getClient().readContract({
     address: vault.address,
     abi: genericVaultAbi,
     functionName: 'totalAssets',
@@ -13,7 +13,7 @@ export async function fetchTotalAssets(vault: VaultContract) {
 }
 
 export async function fetchAutoDepositThreshold(vault: VaultContract) {
-    return client.readContract({
+    return getClient().readContract({
       address: vault.address,
       abi: genericVaultAbi,
       functionName: 'autoAllocationThreshold',
@@ -21,7 +21,7 @@ export async function fetchAutoDepositThreshold(vault: VaultContract) {
 }
 
 export async function fetchAdditionalAvailableAssets(vault: VaultContract) {
-    return client.readContract({
+    return getClient().readContract({
       address: vault.strategy.address,
       abi: genericVaultAbi,
       functionName: 'maxWithdraw',

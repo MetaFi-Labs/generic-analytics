@@ -1,5 +1,6 @@
 import * as rpc from '@/app/actions/rpc'
 import Image from 'next/image'
+import { mainnet } from 'viem/chains'
 
 import MainValueItem from '@/app/components/MainValueItem'
 import VaultItem from '@/app/components/VaultItem'
@@ -8,7 +9,7 @@ import { CONTRACTS } from '@/config/constants'
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export default async function ProofOfReserves() {
+export default async function Home() {
   const [
     // assets
     unitTotalSupply,
@@ -23,15 +24,15 @@ export default async function ProofOfReserves() {
     // redemptionPrice
     redemptionPrice
   ] = await Promise.all([
-    rpc.fetchTotalSupply(CONTRACTS.assets.unit),
+    rpc.fetchTotalSupply(CONTRACTS.ethereum.assets.unit, mainnet),
 
-    rpc.fetchTotalAssets(CONTRACTS.vaults.usdc),
-    rpc.fetchTotalAssets(CONTRACTS.vaults.usdt),
-    rpc.fetchTotalAssets(CONTRACTS.vaults.usds),
+    rpc.fetchTotalAssets(CONTRACTS.ethereum.vaults.usdc),
+    rpc.fetchTotalAssets(CONTRACTS.ethereum.vaults.usdt),
+    rpc.fetchTotalAssets(CONTRACTS.ethereum.vaults.usds),
 
-    rpc.fetchPrice(CONTRACTS.priceFeeds.usdc),
-    rpc.fetchPrice(CONTRACTS.priceFeeds.usdt),
-    rpc.fetchPrice(CONTRACTS.priceFeeds.usds),
+    rpc.fetchPrice(CONTRACTS.ethereum.priceFeeds.usdc),
+    rpc.fetchPrice(CONTRACTS.ethereum.priceFeeds.usdt),
+    rpc.fetchPrice(CONTRACTS.ethereum.priceFeeds.usds),
 
     rpc.fetchShareRedemptionPrice(),
   ])
