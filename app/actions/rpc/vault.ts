@@ -13,18 +13,18 @@ export async function fetchTotalAssets(vault: VaultContract) {
 }
 
 export async function fetchAutoDepositThreshold(vault: VaultContract) {
-    return getClient().readContract({
-      address: vault.address,
-      abi: genericVaultAbi,
-      functionName: 'autoAllocationThreshold',
-    }).then(res => Number(res) / 10 ** vault.decimals)
+  return getClient().readContract({
+    address: vault.address,
+    abi: genericVaultAbi,
+    functionName: 'autoAllocationThreshold',
+  }).then(res => Number(res) / 10 ** vault.decimals)
 }
 
 export async function fetchAdditionalAvailableAssets(vault: VaultContract) {
-    return getClient().readContract({
-      address: vault.strategy.address,
-      abi: genericVaultAbi,
-      functionName: 'maxWithdraw',
-      args: [vault.address],
-    }).then(res => Number(res) / 10 ** vault.strategy.decimals)
+  return getClient().readContract({
+    address: vault.strategy.address,
+    abi: genericVaultAbi,
+    functionName: 'maxWithdraw',
+    args: [vault.address],
+  }).then(res => Number(res) / 10 ** vault.strategy.decimals)
 }
