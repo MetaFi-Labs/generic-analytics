@@ -1,8 +1,14 @@
+import { ValueContract } from './common';
+
 export type AssetKey = 'unit' | 'usdc' | 'usdt' | 'usds';
 
-export interface AssetContract {
-  address: `0x${string}`;
-  decimals: number;
+export interface AssetContract extends ValueContract {
+  metadata: AssetMetadata;
 }
 
-export type AssetsMap<T> = Record<AssetKey, T>;
+export interface AssetMetadata {
+  iconSrc: string;
+  symbol: string;
+  name: string;
+  color: string;
+}

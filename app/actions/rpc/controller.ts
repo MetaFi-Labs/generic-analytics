@@ -17,3 +17,11 @@ export async function fetchVaultSettings(vault: VaultContract) {
       maxProportionality: res[2] / 100,
     }))
 }
+
+export async function fetchShareRedemptionPrice() {
+    return client.readContract({
+      address: CONTRACTS.controller.address,
+      abi: controllerAbi,
+      functionName: 'shareRedemptionPrice',
+    }).then(res => Number(res) / 10 ** CONTRACTS.assets.unit.decimals)
+}

@@ -20,11 +20,11 @@ export async function fetchAutoDepositThreshold(vault: VaultContract) {
     }).then(res => Number(res) / 10 ** vault.decimals)
 }
 
-export async function fetchAdditionalAvailableAssets(vault: VaultContract, strategy: VaultContract) {
+export async function fetchAdditionalAvailableAssets(vault: VaultContract) {
     return client.readContract({
-      address: strategy.address,
+      address: vault.strategy.address,
       abi: genericVaultAbi,
       functionName: 'maxWithdraw',
       args: [vault.address],
-    }).then(res => Number(res) / 10 ** strategy.decimals)
+    }).then(res => Number(res) / 10 ** vault.strategy.decimals)
 }

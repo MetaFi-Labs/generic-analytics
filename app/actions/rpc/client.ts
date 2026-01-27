@@ -6,5 +6,5 @@ export const client = createPublicClient({
     multicall: true,
   },
   chain: mainnet,
-  transport: http(),
+  transport: http('https://ethereum.publicnode.com'),
 })

@@ -1,77 +1,83 @@
-import { VaultsMap, VaultContract } from '@/app/types/vaults';
-import { AssetsMap, AssetContract } from '@/app/types/assets';
-import { PriceFeedsMap, PriceFeedContract } from '@/app/types/priceFeeds';
+import { VaultKey, VaultContract } from '@/app/types/vaults';
+import { AssetKey, AssetContract } from '@/app/types/assets';
+import { PriceFeedKey } from '@/app/types/priceFeeds';
+import { Contract, ValueContract } from '@/app/types/common';
 
 export const CONTRACTS = {
   controller: {
     address: '0x3a64D23313E1bEAABa25Ec13149bD8D514C973Ae' as const,
-  },
+  } as Contract,
   bridgeCoordinator: {
     address: '0x0503F2C5A1a4b72450c6Cfa790F2097CF5cB6a01' as const,
-  },
+  } as Contract,
   vaults: {
     usdc: {
       address: '0x4825eFF24F9B7b76EEAFA2ecc6A1D5dFCb3c1c3f' as const,
       decimals: 6,
-      name: 'USDC Vault',
-      symbol: 'USDC',
-      displayName: 'USD Coin',
-      icon: '$',
-      color: '#2775CA',
       strategy: {
         address: '0xBEEF01735c132Ada46AA9aA4c54623cAA92A64CB' as const,
         decimals: 6,
-      } as VaultContract,
+      } as ValueContract,
     },
     usdt: {
       address: '0xB8280955aE7b5207AF4CDbdCd775135Bd38157fE' as const,
       decimals: 6,
-      name: 'USDT Vault',
-      symbol: 'USDT',
-      displayName: 'Tether',
-      icon: '₮',
-      color: '#26A17B',
       strategy: {
         address: '0xbEef047a543E45807105E51A8BBEFCc5950fcfBa' as const,
         decimals: 6,
-      } as VaultContract,
+      } as ValueContract,
     },
     usds: {
       address: '0x6133dA4Cd25773Ebd38542a8aCEF8F94cA89892A' as const,
       decimals: 18,
-      name: 'USDS Vault',
-      symbol: 'USDS',
-      displayName: 'Sky Dollar',
-      icon: '◎',
-      color: '#6E62E5',
       strategy: {
         address: '0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD' as const,
         decimals: 18,
-      } as VaultContract,
+      } as ValueContract,
     }
-  } as VaultsMap<VaultContract> | VaultsMap<any>,
+  } as Record<VaultKey, VaultContract>,
   assets: {
     unit: {
       address: '0x8c307baDbd78bEa5A1cCF9677caa58e7A2172502' as const,
       decimals: 18,
-      name: 'Generic Unit'
+      metadata: {
+        iconSrc: '/img/gusd.png',
+        symbol: 'GUSD',
+        name: 'Generic Unit',
+        color: '#3F79FF',
+      }
     },
     usdc: {
       address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' as const,
       decimals: 6,
-      name: 'USD Coin'
+      metadata: {
+        iconSrc: '/img/usdc.png',
+        symbol: 'USDC',
+        name: 'USD Coin',
+        color: '#2775CA',
+      }
     },
     usdt: {
       address: '0xdAC17F958D2ee523a2206206994597C13D831ec7' as const,
       decimals: 6,
-      name: 'Tether USD'
+      metadata: {
+        iconSrc: '/img/usdt.png',
+        symbol: 'USDT',
+        name: 'Tether USD',
+        color: '#26A17B',
+      }
     },
     usds: {
       address: '0xdC035D45d973E3EC169d2276DDab16f1e407384F' as const,
       decimals: 18,
-      name: 'USDS Stablecoin'
+      metadata: {
+        iconSrc: '/img/usds.png',
+        symbol: 'USDS',
+        name: 'USDS Stablecoin',
+        color: '#F4B731',
+      }
     }
-  } as AssetsMap<AssetContract>,
+  } as Record<AssetKey, AssetContract>,
   priceFeeds: {
     usdc: {
       address: '0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6' as const,
@@ -88,7 +94,7 @@ export const CONTRACTS = {
       decimals: 8,
       name: 'USDS/USD Chainlink Feed'
     }
-  } as PriceFeedsMap<PriceFeedContract>,
+  } as Record<PriceFeedKey, ValueContract>,
   predeposits: {
     status: {
       name: 'Status',
