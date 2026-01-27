@@ -4,6 +4,7 @@ import * as rpc from '../actions/rpc'
 import ChangeInTimeBar from '../components/ChangeInTimeBar'
 import UnitsInTimeLine from '../components/UnitsInTimeLine'
 import VaultItem from '../components/VaultItem'
+import MainValueItem from '../components/MainValueItem'
 import { CONTRACTS } from '../../config/constants'
 
 export const dynamic = 'force-dynamic';
@@ -74,8 +75,25 @@ export default async function Home() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-zinc-900">
       <main className="flex min-h-screen w-full max-w-6xl flex-col items-center py-12 px-6 bg-white dark:bg-black sm:items-start">
-        <div className="w-full mb-12">
-          <h1 className="text-4xl font-bold mb-2 text-zinc-900 dark:text-zinc-100">Generic Internal Analytics</h1>
+        <h1 className="w-full mb-12 text-4xl font-bold text-zinc-900 dark:text-zinc-100">Generic Internal Analytics</h1>
+
+        <div className="w-full mb-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <MainValueItem
+            label="Total GUSD"
+            value={unitTotalSupply.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+          />
+          <MainValueItem
+            label="Total Collateral Value"
+            value={`$${totalVaultValue.toLocaleString('en-US', { maximumFractionDigits: 0 })}`}
+          />
+          <MainValueItem
+            label="Collateralization"
+            value={`${overcollateralization.toFixed(4)}%`}
+          />
+          <MainValueItem
+            label="GUSD Price"
+            value={`$${redemptionPrice.toLocaleString('en-US', { maximumFractionDigits: 4 })}`}
+          />
         </div>
 
         {/* Total Unit Tokens Section */}

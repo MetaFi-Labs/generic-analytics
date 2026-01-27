@@ -1,7 +1,7 @@
 import * as rpc from '@/app/actions/rpc'
 import Image from 'next/image'
 
-import ValueItem from '@/app/components/ValueItem'
+import MainValueItem from '@/app/components/MainValueItem'
 import VaultItem from '@/app/components/VaultItem'
 import { CONTRACTS } from '@/config/constants'
 
@@ -49,19 +49,19 @@ export default async function ProofOfReserves() {
         </div>
 
         <div className="w-full mb-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <ValueItem
+          <MainValueItem
             label="Total GUSD"
             value={unitTotalSupply.toLocaleString('en-US', { maximumFractionDigits: 0 })}
           />
-          <ValueItem
+          <MainValueItem
             label="Total Collateral Value"
             value={`$${totalVaultValue.toLocaleString('en-US', { maximumFractionDigits: 0 })}`}
           />
-          <ValueItem
+          <MainValueItem
             label="Collateralization"
             value={`${overcollateralization.toFixed(4)}%`}
           />
-          <ValueItem
+          <MainValueItem
             label="GUSD Price"
             value={`$${redemptionPrice.toLocaleString('en-US', { maximumFractionDigits: 4 })}`}
           />
