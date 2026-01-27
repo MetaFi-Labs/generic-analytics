@@ -119,6 +119,16 @@ export const CONTRACTS = {
           color: '#3F79FF',
         }
       } as AssetContract,
+      sgusd: {
+        address: '0x4Fb03AfE959394DB9C4E312A89C6e485FB3732d1' as const,
+        decimals: 18,
+        metadata: {
+          iconSrc: '/img/gusd.png',
+          symbol: 'sGUSD',
+          name: 'Citrea Staked GUSD',
+          color: '#3F79FF',
+        }
+      } as AssetContract,
     },
   },
 } as const

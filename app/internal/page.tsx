@@ -19,6 +19,7 @@ export default async function Internal() {
     // assets
     unitTotalSupply,
     citreaTotalSupply,
+    citreaStakedGusdSupply,
     // usdcVaultBalance,
     // usdtVaultBalance,
     // usdsVaultBalance,
@@ -47,6 +48,7 @@ export default async function Internal() {
   ] = await Promise.all([
     rpc.fetchTotalSupply(CONTRACTS.ethereum.assets.unit, mainnet),
     rpc.fetchTotalSupply(CONTRACTS.citrea.assets.unit, citrea),
+    rpc.fetchTotalSupply(CONTRACTS.citrea.assets.sgusd, citrea),
     // rpc.fetchBalanceOf(CONTRACTS.assets.usdc, CONTRACTS.vaults.usdc.address),
     // rpc.fetchBalanceOf(CONTRACTS.assets.usdt, CONTRACTS.vaults.usdt.address),
     // rpc.fetchBalanceOf(CONTRACTS.assets.usds, CONTRACTS.vaults.usds.address),
@@ -111,8 +113,8 @@ export default async function Internal() {
             value={statusPredeposits.toLocaleString('en-US', { maximumFractionDigits: 0 })}
           />
           <ValueItem
-            label='Citrea'
-            value={citreaTotalSupply.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+            label='Citrea (total / staked)'
+            value={citreaTotalSupply.toLocaleString('en-US', { maximumFractionDigits: 0 }) + ' / ' + citreaStakedGusdSupply.toLocaleString('en-US', { maximumFractionDigits: 0 })}
           />
           <ValueItem
             label='Ethereum'
