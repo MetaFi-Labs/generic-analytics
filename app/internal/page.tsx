@@ -109,8 +109,8 @@ export default async function Internal() {
       redeemSlippage: usdsPrice >= 1 ? 0 : (1 - usdsPrice) * 100,
       maxCapacity: usdsVaultSettings.maxCapacity,
       minProportionality: usdsVaultSettings.minProportionality,
-      maxProportionality: usdtVaultSettings.maxProportionality,
-      autodepositThreshold: usdtVaultAutoDepositThreshold,
+      maxProportionality: usdsVaultSettings.maxProportionality,
+      autodepositThreshold: usdsVaultAutoDepositThreshold,
     },
   } as Record<AssetKey, VaultItemInternalProps>
 
