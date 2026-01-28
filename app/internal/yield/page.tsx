@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import * as rpc from '@/app/actions/rpc'
-import { CONTRACTS } from '@/config/constants'
+import { CONTRACTS, YIELD_DESTINATIONS } from '@/config/constants'
 import { mainnet } from 'viem/chains'
 import { citrea } from '@/config/chains/citrea'
 
@@ -35,6 +35,71 @@ export default function YieldDistributionCalculator() {
   } | null>(null)
 
   const GENERIC_FEE_PERCENTAGE = 10 // 10% protocol fee
+
+  const getYieldDestination = (chainName: string, type?: 'staked' | 'unstaked') => {
+    switch (chainName) {
+      case 'Generic Fee':
+        return {
+          address: YIELD_DESTINATIONS.generic.address,
+          chainId: YIELD_DESTINATIONS.generic.chainId,
+          needsBridge: false,
+        }
+      case 'Citrea':
+        if (type === 'staked') {
+          return {
+            address: YIELD_DESTINATIONS.citrea.staking.address,
+            chainId: YIELD_DESTINATIONS.citrea.staking.chainId,
+            needsBridge: YIELD_DESTINATIONS.citrea.staking.chainId !== 1,
+          }
+        } else if (type === 'unstaked') {
+          return {
+            address: YIELD_DESTINATIONS.citrea.unstaking.address,
+            chainId: YIELD_DESTINATIONS.citrea.unstaking.chainId,
+            needsBridge: YIELD_DESTINATIONS.citrea.unstaking.chainId !== 1,
+          }
+        }
+        // Fallback for Citrea without type
+        return {
+          address: YIELD_DESTINATIONS.citrea.unstaking.address,
+          chainId: YIELD_DESTINATIONS.citrea.unstaking.chainId,
+          needsBridge: YIELD_DESTINATIONS.citrea.unstaking.chainId !== 1,
+        }
+      case 'Status L2 (Predeposit)':
+        return {
+          address: YIELD_DESTINATIONS.status.address,
+          chainId: YIELD_DESTINATIONS.status.chainId,
+          needsBridge: YIELD_DESTINATIONS.status.chainId !== 1,
+        }
+      case 'Ethereum':
+        return {
+          address: YIELD_DESTINATIONS.ethereum.address,
+          chainId: YIELD_DESTINATIONS.ethereum.chainId,
+          needsBridge: YIELD_DESTINATIONS.ethereum.chainId !== 1,
+        }
+      default:
+        return {
+          address: '0x0000000000000000000000000000000000000000',
+          chainId: 1,
+          needsBridge: false,
+        }
+    }
+  }
+
+  const getChainName = (chainId: number) => {
+    switch (chainId) {
+      case 1: return 'Ethereum'
+      case 4114: return 'Citrea'
+      default: return `Chain ${chainId}`
+    }
+  }
+
+  const getChainPrefix = (chainId: number) => {
+    switch (chainId) {
+      case 1: return 'eth:'
+      case 4114: return 'ctr:'
+      default: return `chain${chainId}:`
+    }
+  }
 
   const getGenericFee = (yieldAmount: number) => {
     return yieldAmount * (GENERIC_FEE_PERCENTAGE / 100)
@@ -438,52 +503,120 @@ export default function YieldDistributionCalculator() {
                       </div>
                     )}
 
+                    {/* Yield Destination */}
+                    {chain.name !== 'Citrea' && (() => {
+                      const destination = getYieldDestination(chain.name)
+                      return (
+                        <div className="mt-4 pt-4 border-t border-zinc-300 dark:border-zinc-700 space-y-2">
+                          <h4 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-2">Yield Destination</h4>
+                          <div className="pl-3 space-y-1">
+                            <div className="flex items-start text-xs">
+                              <span className="text-zinc-500 dark:text-zinc-500 mr-1 font-semibold">{getChainPrefix(destination.chainId)}</span>
+                              <span className="font-mono text-zinc-500 dark:text-zinc-500 break-all flex-1">
+                                {destination.address}
+                              </span>
+                            </div>
+                            {destination.needsBridge && (
+                              <div className="flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400 mt-1">
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                                <span>Requires bridging to {getChainName(destination.chainId)}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )
+                    })()}
+
                     {/* Citrea Breakdown: Staked vs Unstaked */}
                     {chain.name === 'Citrea' && chain.breakdown && chainSupplies && (
                       <div className="mt-4 pt-4 border-t border-zinc-300 dark:border-zinc-700 space-y-3">
                         <h4 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-2">Distribution Breakdown</h4>
 
-                        <div className="pl-3 space-y-2">
-                          <div>
+                        <div className="pl-3 space-y-3">
+                          <div className="p-3 bg-zinc-50 dark:bg-zinc-900 rounded border border-zinc-200 dark:border-zinc-800">
                             <div className="flex justify-between items-center mb-1">
                               <span className="text-sm text-zinc-600 dark:text-zinc-400">Staked (sGUSD):</span>
                               <span className="text-sm font-mono font-semibold text-blue-600 dark:text-blue-400">
                                 ${chain.breakdown.staked?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                               </span>
                             </div>
-                            <div className="flex justify-between text-xs">
+                            <div className="flex justify-between text-xs mb-0.5">
                               <span className="text-zinc-500 dark:text-zinc-500">Supply:</span>
                               <span className="font-mono text-zinc-500 dark:text-zinc-500">
                                 {chainSupplies.citreaStaked.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} GUSD
                               </span>
                             </div>
-                            <div className="flex justify-between text-xs">
+                            <div className="flex justify-between text-xs mb-2">
                               <span className="text-zinc-500 dark:text-zinc-500">Proportion:</span>
                               <span className="font-mono text-zinc-500 dark:text-zinc-500">
                                 {((chainSupplies.citreaStaked / chainSupplies.citrea) * 100).toFixed(2)}%
                               </span>
                             </div>
+                            {(() => {
+                              const destination = getYieldDestination('Citrea', 'staked')
+                              return (
+                                <div className="pt-2 border-t border-zinc-200 dark:border-zinc-700 space-y-1">
+                                  <div className="flex items-start text-xs">
+                                    <span className="text-zinc-500 dark:text-zinc-500 mr-1 font-semibold">{getChainPrefix(destination.chainId)}</span>
+                                    <span className="font-mono text-zinc-500 dark:text-zinc-500 break-all flex-1">
+                                      {destination.address}
+                                    </span>
+                                  </div>
+                                  {destination.needsBridge && (
+                                    <div className="flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
+                                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                      </svg>
+                                      <span>Bridge to {getChainName(destination.chainId)}</span>
+                                    </div>
+                                  )}
+                                </div>
+                              )
+                            })()}
                           </div>
 
-                          <div>
+                          <div className="p-3 bg-zinc-50 dark:bg-zinc-900 rounded border border-zinc-200 dark:border-zinc-800">
                             <div className="flex justify-between items-center mb-1">
                               <span className="text-sm text-zinc-600 dark:text-zinc-400">Unstaked (GUSD):</span>
                               <span className="text-sm font-mono font-semibold text-purple-600 dark:text-purple-400">
                                 ${chain.breakdown.unstaked?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                               </span>
                             </div>
-                            <div className="flex justify-between text-xs">
+                            <div className="flex justify-between text-xs mb-0.5">
                               <span className="text-zinc-500 dark:text-zinc-500">Supply:</span>
                               <span className="font-mono text-zinc-500 dark:text-zinc-500">
                                 {chainSupplies.citreaUnstaked.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} GUSD
                               </span>
                             </div>
-                            <div className="flex justify-between text-xs">
+                            <div className="flex justify-between text-xs mb-2">
                               <span className="text-zinc-500 dark:text-zinc-500">Proportion:</span>
                               <span className="font-mono text-zinc-500 dark:text-zinc-500">
                                 {((chainSupplies.citreaUnstaked / chainSupplies.citrea) * 100).toFixed(2)}%
                               </span>
                             </div>
+                            {(() => {
+                              const destination = getYieldDestination('Citrea', 'unstaked')
+                              return (
+                                <div className="pt-2 border-t border-zinc-200 dark:border-zinc-700 space-y-1">
+                                  <div className="flex items-start text-xs">
+                                    <span className="text-zinc-500 dark:text-zinc-500 mr-1 font-semibold">{getChainPrefix(destination.chainId)}</span>
+                                    <span className="font-mono text-zinc-500 dark:text-zinc-500 break-all flex-1">
+                                      {destination.address}
+                                    </span>
+                                  </div>
+                                  {destination.needsBridge && (
+                                    <div className="flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
+                                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                      </svg>
+                                      <span>Bridge to {getChainName(destination.chainId)}</span>
+                                    </div>
+                                  )}
+                                </div>
+                              )
+                            })()}
                           </div>
                         </div>
                       </div>

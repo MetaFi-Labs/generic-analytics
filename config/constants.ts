@@ -2,6 +2,7 @@ import { VaultKey, VaultContract } from '@/app/types/vaults';
 import { AssetKey, AssetContract } from '@/app/types/assets';
 import { PriceFeedKey } from '@/app/types/priceFeeds';
 import { Contract, ValueContract } from '@/app/types/common';
+import { chainConfig } from 'viem/zksync';
 
 export const CONTRACTS = {
   ethereum: {
@@ -140,3 +141,28 @@ export const DUNE_QUERIES = {
   rebalancesInTime: 6535593,
   predepositsInTime: 6535610
 } as const
+
+export const YIELD_DESTINATIONS = {
+  generic: {
+    address: '0x3794d7f91b3Dd3b338FEe671aC6AA42BEA5e3D17',
+    chainId: 1,
+  },
+  citrea: {
+    staking: {
+      address: '0x4Fb03AfE959394DB9C4E312A89C6e485FB3732d1',
+      chainId: 4114,
+    },
+    unstaking: {
+      address: '0x0000000000000000000000000000000000000000',
+      chainId: 4114,
+    },
+  },
+  status: {
+    address: '0x0000000000000000000000000000000000000000',
+    chainId: 1,
+  },
+  ethereum: {
+    address: '0x3794d7f91b3Dd3b338FEe671aC6AA42BEA5e3D17',
+    chainId: 1,
+  }
+} as const;
