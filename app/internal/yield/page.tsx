@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import * as rpc from '@/app/actions/rpc'
-import { CONTRACTS, YIELD_DESTINATIONS } from '@/config/constants'
+import { CONTRACTS, YIELD_DESTINATIONS, type YieldDestinationId } from '@/config/constants'
 import { mainnet } from 'viem/chains'
 import { citrea } from '@/config/chains/citrea'
 
@@ -11,9 +11,12 @@ interface ChainYield {
   name: string
   supply: number
   yieldAmount: number
+  destinationId?: YieldDestinationId
   breakdown?: {
     staked?: number
     unstaked?: number
+    stakedDestinationId?: YieldDestinationId
+    unstakedDestinationId?: YieldDestinationId
   }
 }
 
@@ -36,52 +39,28 @@ export default function YieldDistributionCalculator() {
 
   const GENERIC_FEE_PERCENTAGE = 10 // 10% protocol fee
 
-  const getYieldDestination = (chainName: string, type?: 'staked' | 'unstaked') => {
+  const getDestinationId = (chainName: string, type?: 'staked' | 'unstaked'): YieldDestinationId => {
     switch (chainName) {
       case 'Generic Fee':
-        return {
-          address: YIELD_DESTINATIONS.generic.address,
-          chainId: YIELD_DESTINATIONS.generic.chainId,
-          needsBridge: false,
-        }
-      case 'Citrea':
-        if (type === 'staked') {
-          return {
-            address: YIELD_DESTINATIONS.citrea.staking.address,
-            chainId: YIELD_DESTINATIONS.citrea.staking.chainId,
-            needsBridge: YIELD_DESTINATIONS.citrea.staking.chainId !== 1,
-          }
-        } else if (type === 'unstaked') {
-          return {
-            address: YIELD_DESTINATIONS.citrea.unstaking.address,
-            chainId: YIELD_DESTINATIONS.citrea.unstaking.chainId,
-            needsBridge: YIELD_DESTINATIONS.citrea.unstaking.chainId !== 1,
-          }
-        }
-        // Fallback for Citrea without type
-        return {
-          address: YIELD_DESTINATIONS.citrea.unstaking.address,
-          chainId: YIELD_DESTINATIONS.citrea.unstaking.chainId,
-          needsBridge: YIELD_DESTINATIONS.citrea.unstaking.chainId !== 1,
-        }
-      case 'Status L2 (Predeposit)':
-        return {
-          address: YIELD_DESTINATIONS.status.address,
-          chainId: YIELD_DESTINATIONS.status.chainId,
-          needsBridge: YIELD_DESTINATIONS.status.chainId !== 1,
-        }
+        return 'generic-fee'
       case 'Ethereum':
-        return {
-          address: YIELD_DESTINATIONS.ethereum.address,
-          chainId: YIELD_DESTINATIONS.ethereum.chainId,
-          needsBridge: YIELD_DESTINATIONS.ethereum.chainId !== 1,
-        }
+        return 'ethereum'
+      case 'Citrea':
+        if (type === 'staked') return 'citrea-staked'
+        if (type === 'unstaked') return 'citrea-unstaked'
+        return 'citrea-unstaked' // fallback
+      case 'Status L2 (Predeposit)':
+        return 'status-predeposit'
       default:
-        return {
-          address: '0x0000000000000000000000000000000000000000',
-          chainId: 1,
-          needsBridge: false,
-        }
+        return 'ethereum' // fallback
+    }
+  }
+
+  const getDestination = (destinationId: YieldDestinationId) => {
+    const destination = YIELD_DESTINATIONS[destinationId]
+    return {
+      ...destination,
+      needsBridge: destination.chainId !== 1,
     }
   }
 
@@ -130,11 +109,13 @@ export default function YieldDistributionCalculator() {
         name: 'Generic Fee',
         supply: 0, // Not based on supply
         yieldAmount: genericFee,
+        destinationId: getDestinationId('Generic Fee'),
       },
       {
         name: 'Ethereum',
         supply: chainSupplies.ethereum,
         yieldAmount: chainSupplies.total > 0 ? (chainSupplies.ethereum / chainSupplies.total) * yieldAfterFee : 0,
+        destinationId: getDestinationId('Ethereum'),
       },
       {
         name: 'Citrea',
@@ -143,12 +124,15 @@ export default function YieldDistributionCalculator() {
         breakdown: {
           staked: citreaStakedYield,
           unstaked: citreaUnstakedYield,
+          stakedDestinationId: getDestinationId('Citrea', 'staked'),
+          unstakedDestinationId: getDestinationId('Citrea', 'unstaked'),
         },
       },
       {
         name: 'Status L2 (Predeposit)',
         supply: chainSupplies.status,
         yieldAmount: chainSupplies.total > 0 ? (chainSupplies.status / chainSupplies.total) * yieldAfterFee : 0,
+        destinationId: getDestinationId('Status L2 (Predeposit)'),
       },
     ]
 
@@ -314,11 +298,13 @@ export default function YieldDistributionCalculator() {
           name: 'Generic Fee',
           supply: 0, // Not based on supply
           yieldAmount: 0,
+          destinationId: getDestinationId('Generic Fee'),
         },
         {
           name: 'Ethereum',
           supply: ethereumSupply,
           yieldAmount: 0,
+          destinationId: getDestinationId('Ethereum'),
         },
         {
           name: 'Citrea',
@@ -327,12 +313,15 @@ export default function YieldDistributionCalculator() {
           breakdown: {
             staked: 0,
             unstaked: 0,
+            stakedDestinationId: getDestinationId('Citrea', 'staked'),
+            unstakedDestinationId: getDestinationId('Citrea', 'unstaked'),
           },
         },
         {
           name: 'Status L2 (Predeposit)',
           supply: statusPredeposits,
           yieldAmount: 0,
+          destinationId: getDestinationId('Status L2 (Predeposit)'),
         },
       ]
 
@@ -504,8 +493,8 @@ export default function YieldDistributionCalculator() {
                     )}
 
                     {/* Yield Destination */}
-                    {chain.name !== 'Citrea' && (() => {
-                      const destination = getYieldDestination(chain.name)
+                    {chain.name !== 'Citrea' && chain.destinationId && (() => {
+                      const destination = getDestination(chain.destinationId)
                       return (
                         <div className="mt-4 pt-4 border-t border-zinc-300 dark:border-zinc-700 space-y-2">
                           <h4 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-2">Yield Destination</h4>
@@ -554,8 +543,8 @@ export default function YieldDistributionCalculator() {
                                 {((chainSupplies.citreaStaked / chainSupplies.citrea) * 100).toFixed(2)}%
                               </span>
                             </div>
-                            {(() => {
-                              const destination = getYieldDestination('Citrea', 'staked')
+                            {chain.breakdown.stakedDestinationId && (() => {
+                              const destination = getDestination(chain.breakdown.stakedDestinationId!)
                               return (
                                 <div className="pt-2 border-t border-zinc-200 dark:border-zinc-700 space-y-1">
                                   <div className="flex items-start text-xs">
@@ -596,8 +585,8 @@ export default function YieldDistributionCalculator() {
                                 {((chainSupplies.citreaUnstaked / chainSupplies.citrea) * 100).toFixed(2)}%
                               </span>
                             </div>
-                            {(() => {
-                              const destination = getYieldDestination('Citrea', 'unstaked')
+                            {chain.breakdown.unstakedDestinationId && (() => {
+                              const destination = getDestination(chain.breakdown.unstakedDestinationId!)
                               return (
                                 <div className="pt-2 border-t border-zinc-200 dark:border-zinc-700 space-y-1">
                                   <div className="flex items-start text-xs">

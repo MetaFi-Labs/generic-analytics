@@ -142,27 +142,41 @@ export const DUNE_QUERIES = {
   predepositsInTime: 6535610
 } as const
 
-export const YIELD_DESTINATIONS = {
-  generic: {
+export type YieldDestinationId =
+  | 'generic-fee'
+  | 'ethereum'
+  | 'citrea-staked'
+  | 'citrea-unstaked'
+  | 'status-predeposit'
+
+export const YIELD_DESTINATIONS: Record<YieldDestinationId, {
+  address: string
+  chainId: number
+  name: string
+}> = {
+  'generic-fee': {
     address: '0x3794d7f91b3Dd3b338FEe671aC6AA42BEA5e3D17',
     chainId: 1,
+    name: 'Generic Fee',
   },
-  citrea: {
-    staking: {
-      address: '0x4Fb03AfE959394DB9C4E312A89C6e485FB3732d1',
-      chainId: 4114,
-    },
-    unstaking: {
-      address: '0x0000000000000000000000000000000000000000',
-      chainId: 4114,
-    },
+  'ethereum': {
+    address: '0x3794d7f91b3Dd3b338FEe671aC6AA42BEA5e3D17',
+    chainId: 1,
+    name: 'Ethereum',
   },
-  status: {
+  'citrea-staked': {
+    address: '0x4Fb03AfE959394DB9C4E312A89C6e485FB3732d1',
+    chainId: 4114,
+    name: 'Citrea Staked',
+  },
+  'citrea-unstaked': {
+    address: '0x0000000000000000000000000000000000000000',
+    chainId: 4114,
+    name: 'Citrea Unstaked',
+  },
+  'status-predeposit': {
     address: '0x0000000000000000000000000000000000000000',
     chainId: 1,
+    name: 'Status Predeposit',
   },
-  ethereum: {
-    address: '0x3794d7f91b3Dd3b338FEe671aC6AA42BEA5e3D17',
-    chainId: 1,
-  }
-} as const;
+} as const
