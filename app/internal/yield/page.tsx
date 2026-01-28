@@ -19,6 +19,7 @@ export default function YieldDistributionCalculator() {
   const [totalYield, setTotalYield] = useState<number>(0)
   const [collateralValue, setCollateralValue] = useState<number>(0)
   const [unitSupply, setUnitSupply] = useState<number>(0)
+  const [safetyBuffer, setSafetyBuffer] = useState<number>(0)
   const [yieldToDistribute, setYieldToDistribute] = useState<string>('')
   const [chainSupplies, setChainSupplies] = useState<{
     ethereum: number
@@ -170,6 +171,8 @@ export default function YieldDistributionCalculator() {
         citreaUnitSupply,
         // Predeposits
         statusPredeposits,
+        // Safety buffer
+        safetyBufferYieldDeduction,
       ] = await Promise.all([
         rpc.fetchTotalAssets(CONTRACTS.ethereum.vaults.usdc),
         rpc.fetchTotalAssets(CONTRACTS.ethereum.vaults.usdt),
@@ -183,6 +186,8 @@ export default function YieldDistributionCalculator() {
         rpc.fetchTotalSupply(CONTRACTS.citrea.assets.unit, citrea),
 
         rpc.fetchTotalPredeposits(CONTRACTS.ethereum.predeposits.status.nickname),
+
+        rpc.fetchSafetyBufferYieldDeduction(),
       ])
 
       // Calculate total collateral value in USD
@@ -193,9 +198,11 @@ export default function YieldDistributionCalculator() {
 
       setCollateralValue(totalCollateral)
       setUnitSupply(ethereumUnitSupply)
+      setSafetyBuffer(safetyBufferYieldDeduction)
 
-      // Calculate distributable yield: collateral value - unit supply
-      const distributableYield = Math.max(0, totalCollateral - ethereumUnitSupply)
+      // Calculate distributable yield: collateral value - unit supply - safety buffer
+      const rawYield = Math.max(0, totalCollateral - ethereumUnitSupply)
+      const distributableYield = Math.max(0, rawYield - safetyBufferYieldDeduction)
       setTotalYield(distributableYield)
 
       // Calculate Ethereum supply (total - other chains)
@@ -281,7 +288,13 @@ export default function YieldDistributionCalculator() {
                 <div className="flex justify-between">
                   <span className="text-zinc-600 dark:text-zinc-400">Total Unit Supply:</span>
                   <span className="font-mono font-semibold text-zinc-900 dark:text-zinc-100">
-                    {unitSupply.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} GUSD
+                    {unitSupply.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-zinc-600 dark:text-zinc-400">Safety Buffer Deduction:</span>
+                  <span className="font-mono font-semibold text-amber-600 dark:text-amber-400">
+                    {safetyBuffer.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                 </div>
                 <div className="flex justify-between pt-2 border-t border-zinc-300 dark:border-zinc-700">

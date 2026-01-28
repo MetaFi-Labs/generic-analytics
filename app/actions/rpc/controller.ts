@@ -25,3 +25,11 @@ export async function fetchShareRedemptionPrice() {
     functionName: 'shareRedemptionPrice',
   }).then(res => Number(res) / 10 ** CONTRACTS.ethereum.assets.unit.decimals)
 }
+
+export async function fetchSafetyBufferYieldDeduction() {
+  return getClient().readContract({
+    address: CONTRACTS.ethereum.controller.address,
+    abi: controllerAbi,
+    functionName: 'safetyBufferYieldDeduction',
+  }).then(res => Number(res) / 10 ** CONTRACTS.ethereum.assets.unit.decimals)
+}
