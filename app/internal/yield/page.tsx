@@ -545,16 +545,17 @@ export default function YieldDistributionCalculator() {
                         <div className="pl-3 space-y-3">
                           {chain.destinations.map((breakdown, idx) => {
                             const destination = breakdown.destination
+                            const isZeroAddress = destination.address === '0x0000000000000000000000000000000000000000'
                             const colors = [
                               'text-blue-600 dark:text-blue-400',
                               'text-purple-600 dark:text-purple-400',
                               'text-green-600 dark:text-green-400',
                               'text-orange-600 dark:text-orange-400'
                             ]
-                            const colorClass = colors[idx % colors.length]
+                            const colorClass = isZeroAddress ? 'text-red-600 dark:text-red-400' : colors[idx % colors.length]
 
                             return (
-                              <div key={destination.id} className="p-3 bg-zinc-50 dark:bg-zinc-900 rounded border border-zinc-200 dark:border-zinc-800">
+                              <div key={destination.id} className={`p-3 bg-zinc-50 dark:bg-zinc-900 rounded border ${isZeroAddress ? 'border-red-300 dark:border-red-800' : 'border-zinc-200 dark:border-zinc-800'}`}>
                                 <div className="flex justify-between items-center mb-1">
                                   <span className="text-sm text-zinc-600 dark:text-zinc-400">{destination.name}:</span>
                                   <span className={`text-sm font-mono font-semibold ${colorClass}`}>
@@ -581,18 +582,25 @@ export default function YieldDistributionCalculator() {
                                 <div className={`${chain.destinations.length > 1 ? 'pt-2 border-t border-zinc-200 dark:border-zinc-700' : ''} space-y-1`}>
                                   <div className="flex items-start text-xs">
                                     <span className="text-zinc-500 dark:text-zinc-500 mr-1 font-semibold">{getChainPrefix(YIELD_DESTINATIONS[chain.key].chainId)}</span>
-                                    <span className="font-mono text-zinc-500 dark:text-zinc-500 break-all flex-1">
+                                    <span className={`font-mono ${isZeroAddress ? 'text-red-600 dark:text-red-400' : 'text-zinc-500 dark:text-zinc-500'} break-all flex-1`}>
                                       {destination.address}
                                     </span>
                                   </div>
-                                  {YIELD_DESTINATIONS[chain.key].chainId !== 1 && (
+                                  {isZeroAddress ? (
+                                    <div className="flex items-center gap-1 text-xs text-red-600 dark:text-red-400 font-semibold">
+                                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                      </svg>
+                                      <span>Missing Address</span>
+                                    </div>
+                                  ) : YIELD_DESTINATIONS[chain.key].chainId !== 1 ? (
                                     <div className="flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
                                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                                       </svg>
                                       <span>Bridge to {getChainName(YIELD_DESTINATIONS[chain.key].chainId)}</span>
                                     </div>
-                                  )}
+                                  ) : null}
                                 </div>
                               </div>
                             )
