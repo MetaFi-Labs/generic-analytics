@@ -3,6 +3,8 @@ import { controllerAbi } from '@/public/abi/Controller.abi'
 import { genericUSDAbi } from '@/public/abi/GenericUSD.abi'
 import { bridgeCoordinatorL1Abi } from '@/public/abi/BridgeCoordinatorL1.abi'
 import { BridgeAdapter, CONTRACTS, YIELD_DESTINATIONS, type YieldDestinationKey } from '@/config/constants'
+import { fetchEstimateBridgeFee } from '@/app/actions/rpc/bridgeAdapter'
+import { fetchEncodeBridgeMessage } from '@/app/actions/rpc/bridgeCoordinator'
 
 export interface TxBuilderTransaction {
   to: Address
@@ -28,11 +30,43 @@ interface ChainYield {
   destinations: DestinationBreakdown[]
 }
 
-export function buildYieldDistributionTxBatch(
+/**
+ * Estimates the bridge fee for a given chain and amount
+ */
+async function estimateBridgeFee(
+  bridge: BridgeAdapter,
+  chainId: number,
+  amount: bigint,
+  sender: `0x${string}`,
+  remoteRecipient: `0x${string}`,
+  sourceWhitelabel: `0x${string}`,
+  destinationWhitelabel: `0x${string}`
+): Promise<bigint> {
+  const bridgeAdapterAddress = bridge.address.ethereum as `0x${string}`
+
+  const message = await fetchEncodeBridgeMessage({
+    sender: sender,
+    recipient: remoteRecipient,
+    sourceWhitelabel: sourceWhitelabel,
+    destinationWhitelabel: destinationWhitelabel,
+    amount
+  })
+
+  // Estimate the fee
+  const fee = await fetchEstimateBridgeFee(bridgeAdapterAddress, {
+    chainId: BigInt(chainId),
+    message,
+    bridgeParams: '0x' as `0x${string}`
+  })
+
+  return fee
+}
+
+export async function buildYieldDistributionTxBatch(
   yieldResults: ChainYield[],
   totalYield: number,
   distributingYield: number
-): TxBuilderTransaction[] {
+): Promise<TxBuilderTransaction[]> {
   const transactions: TxBuilderTransaction[] = []
 
   // Convert to wei (18 decimals)
@@ -170,7 +204,7 @@ export function buildYieldDistributionTxBatch(
     }
   }
 
-  // Add bridge transactions
+  // Add bridge transactions with estimated fees
   for (const [chainId, amount] of bridgeAmountsByChain.entries()) {
     const remoteRecipient = bridgeRecipientsByChain.get(chainId)
     const bridge = bridgeByChain.get(chainId)
@@ -189,8 +223,21 @@ export function buildYieldDistributionTxBatch(
     }
 
     // Convert address to bytes32 (pad left with zeros)
+    const senderBytes32 = `0x${CONTRACTS.ethereum.dao.address.slice(2).padStart(64, '0')}` as `0x${string}`
     const remoteRecipientBytes32 = `0x${remoteRecipient.slice(2).padStart(64, '0')}` as `0x${string}`
+    const sourceWhitelabelBytes32 = `0x${CONTRACTS.ethereum.assets.gusd.address.slice(2).padStart(64, '0')}` as `0x${string}`
     const destinationWhitelabelBytes32 = `0x${destinationWhitelabel.slice(2).padStart(64, '0')}` as `0x${string}`
+
+    // Estimate bridge fee
+    const bridgeFee = await estimateBridgeFee(
+      bridge,
+      chainId,
+      amount,
+      senderBytes32,
+      remoteRecipientBytes32,
+      sourceWhitelabelBytes32,
+      destinationWhitelabelBytes32
+    )
 
     // Note: When a distributor is configured, the bridge sends funds to the distributor contract
     // on the remote chain, which then handles distribution to final destinations.
@@ -211,7 +258,7 @@ export function buildYieldDistributionTxBatch(
 
     transactions.push({
       to: CONTRACTS.ethereum.bridgeCoordinator.address,
-      value: 0, // May need to add bridge fee here
+      value: Number(bridgeFee), // Add estimated bridge fee in wei
       data: bridgeData
     })
   }
@@ -219,12 +266,12 @@ export function buildYieldDistributionTxBatch(
   return transactions
 }
 
-export function downloadTxBatch(
+export async function downloadTxBatch(
   yieldResults: ChainYield[],
   totalYield: number,
   distributingYield: number
-): void {
-  const jsonData = buildYieldDistributionTxBatch(yieldResults, totalYield, distributingYield)
+): Promise<void> {
+  const jsonData = await buildYieldDistributionTxBatch(yieldResults, totalYield, distributingYield)
 
   const blob = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/json' })
   const url = URL.createObjectURL(blob)

@@ -164,6 +164,30 @@ export const DUNE_QUERIES = {
   predepositsInTime: 6535610
 } as const
 
+export interface BridgeAdapter {
+  id: number
+  name: string
+  address: Record<string, string>
+}
+
+export const BRIDGE_ADAPTERS = {
+  layerZero: {
+    id: 1,
+    name: 'LayerZero',
+    address: {
+      ethereum: '0x05a166797e784d49Ba880b289647eCcB29B0144e' as const,
+      citrea: '0xf056d4F903E53432873bFD0DA32f9d6fCb92825c' as const,
+    }
+  } as BridgeAdapter,
+  linea: {
+    id: 2,
+    name: 'Linea',
+    address: {
+      ethereum: '0xe39D672416421Ce1536997FF892C8B339EB9ab93' as const,
+    }
+  } as BridgeAdapter,
+} as const;
+
 export type YieldDestinationKey = 'generic' | 'ethereum' | 'status' | 'citrea';
 
 export interface YieldDestination {

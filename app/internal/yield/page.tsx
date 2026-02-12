@@ -214,11 +214,11 @@ export default function YieldDistributionCalculator() {
     return getCollateralizationAfterDistribution() - getCurrentCollateralization()
   }
 
-  const downloadDistribution = () => {
+  const downloadDistribution = async () => {
     if (!results) return
 
     const distributedYield = getDistributedYield()
-    downloadTxBatch(results, totalYield, distributedYield)
+    await downloadTxBatch(results, totalYield, distributedYield)
   }
 
   const calculateYieldDistribution = async () => {
