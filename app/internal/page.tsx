@@ -11,7 +11,7 @@ import VaultItem from '../components/VaultItem'
 import MainValueItem from '../components/MainValueItem'
 import ValueItem from '../components/ValueItem'
 import { CONTRACTS } from '../../config/constants'
-import type { VaultItemInternalProps } from '../components/VaultItem'
+import type { VaultItemMandatoryProps, VaultItemInternalProps } from '../components/VaultItem'
 import { AssetKey } from 'node:sea'
 
 export const dynamic = 'force-dynamic';
@@ -44,8 +44,6 @@ export default async function Internal() {
     usdcPrice,
     usdtPrice,
     usdsPrice,
-    // redemptionPrice
-    redemptionPrice,
     // bridgeCoordinator
     statusPredeposits,
     // morpho
@@ -82,8 +80,6 @@ export default async function Internal() {
     rpc.fetchPrice(CONTRACTS.ethereum.priceFeeds.usdt),
     rpc.fetchPrice(CONTRACTS.ethereum.priceFeeds.usds),
 
-    rpc.fetchShareRedemptionPrice(),
-
     rpc.fetchTotalPredeposits(CONTRACTS.ethereum.predeposits.status.nickname),
 
     rest.fetchMorphoVaultV1(CONTRACTS.ethereum.vaults.usdc),
@@ -101,51 +97,75 @@ export default async function Internal() {
   const totalVaultValue = usdcTotalAssets * usdcPrice + usdtTotalAssets * usdtPrice + usdsTotalAssets * usdsPrice
   const overcollateralization = (totalVaultValue * 100 / unitTotalSupply)
 
-  const internalVaultsData = {
+  const vaultsData = {
     usdc: {
-      rewards: usdcRewards,
+      assetMetadata: CONTRACTS.ethereum.assets.usdc.metadata,
+      totalAssets: usdcTotalAssets,
+      price: usdcPrice,
+      vaultAddress: CONTRACTS.ethereum.vaults.usdc.address,
+      strategyAddress: CONTRACTS.ethereum.vaults.usdc.strategy.address,
       apy: usdcStrategyData.data.vaultByAddress.state.avgNetApy * 100,
       allocated: (usdcTotalAssets - usdcVaultBalance) / usdcTotalAssets * 100,
       available: (usdcAdditionalAvailableAssets + usdcVaultBalance) / usdcTotalAssets * 100,
+      currentProportionality: (usdcTotalAssets * usdcPrice) / totalVaultValue * 100,
+    },
+    usdt: {
+      assetMetadata: CONTRACTS.ethereum.assets.usdt.metadata,
+      totalAssets: usdtTotalAssets,
+      price: usdtPrice,
+      vaultAddress: CONTRACTS.ethereum.vaults.usdt.address,
+      strategyAddress: CONTRACTS.ethereum.vaults.usdt.strategy.address,
+      apy: usdtStrategyData.data.vaultByAddress.state.avgNetApy * 100,
+      allocated: (usdtTotalAssets - usdtVaultBalance) / usdtTotalAssets * 100,
+      available: (usdtAdditionalAvailableAssets + usdtVaultBalance) / usdtTotalAssets * 100,
+      currentProportionality: (usdtTotalAssets * usdtPrice) / totalVaultValue * 100,
+    },
+    usds: {
+      assetMetadata: CONTRACTS.ethereum.assets.usds.metadata,
+      totalAssets: usdsTotalAssets,
+      price: usdsPrice,
+      vaultAddress: CONTRACTS.ethereum.vaults.usds.address,
+      strategyAddress: CONTRACTS.ethereum.vaults.usds.strategy.address,
+      apy: usdsSSR * 100,
+      allocated: (usdsTotalAssets - usdsVaultBalance) / usdsTotalAssets * 100,
+      available: (usdsAdditionalAvailableAssets + usdsVaultBalance) / usdsTotalAssets * 100,
+      currentProportionality: (usdsTotalAssets * usdsPrice) / totalVaultValue * 100,
+    }
+  } as Record<AssetKey, VaultItemMandatoryProps>
+
+  const internalVaultsData = {
+    usdc: {
+      rewards: usdcRewards,
       mintSlippage: usdcPrice <= 1 ? 0 : (usdcPrice - 1) * 100,
       redeemSlippage: usdcPrice >= 1 ? 0 : (1 - usdcPrice) * 100,
       maxCapacity: usdcVaultSettings.maxCapacity,
       minProportionality: usdcVaultSettings.minProportionality,
       maxProportionality: usdcVaultSettings.maxProportionality,
-      currentProportionality: (usdcTotalAssets * usdcPrice) / totalVaultValue * 100,
       autodepositThreshold: usdcVaultAutoDepositThreshold,
     },
     usdt: {
       rewards: usdtRewards,
-      apy: usdtStrategyData.data.vaultByAddress.state.avgNetApy * 100,
-      allocated: (usdtTotalAssets - usdtVaultBalance) / usdtTotalAssets * 100,
-      available: (usdtAdditionalAvailableAssets + usdtVaultBalance) / usdtTotalAssets * 100,
       mintSlippage: usdtPrice <= 1 ? 0 : (usdtPrice - 1) * 100,
       redeemSlippage: usdtPrice >= 1 ? 0 : (1 - usdtPrice) * 100,
       maxCapacity: usdtVaultSettings.maxCapacity,
       minProportionality: usdtVaultSettings.minProportionality,
       maxProportionality: usdtVaultSettings.maxProportionality,
-      currentProportionality: (usdtTotalAssets * usdtPrice) / totalVaultValue * 100,
       autodepositThreshold: usdtVaultAutoDepositThreshold,
     },
     usds: {
       rewards: usdsRewards,
-      apy: usdsSSR * 100,
-      allocated: (usdsTotalAssets - usdsVaultBalance) / usdsTotalAssets * 100,
-      available: (usdsAdditionalAvailableAssets + usdsVaultBalance) / usdsTotalAssets * 100,
       mintSlippage: usdsPrice <= 1 ? 0 : (usdsPrice - 1) * 100,
       redeemSlippage: usdsPrice >= 1 ? 0 : (1 - usdsPrice) * 100,
       maxCapacity: usdsVaultSettings.maxCapacity,
       minProportionality: usdsVaultSettings.minProportionality,
       maxProportionality: usdsVaultSettings.maxProportionality,
-      currentProportionality: (usdsTotalAssets * usdsPrice) / totalVaultValue * 100,
       autodepositThreshold: usdsVaultAutoDepositThreshold,
     },
   } as Record<AssetKey, VaultItemInternalProps>
 
-  const protocolApy = internalVaultsData.usdc.apy * internalVaultsData.usdc.currentProportionality / 100
-                    + internalVaultsData.usdt.apy * internalVaultsData.usdt.currentProportionality / 100
-                    + internalVaultsData.usds.apy * internalVaultsData.usds.currentProportionality / 100;
+  const protocolApy = vaultsData.usdc.apy * vaultsData.usdc.currentProportionality / 100
+                    + vaultsData.usdt.apy * vaultsData.usdt.currentProportionality / 100
+                    + vaultsData.usds.apy * vaultsData.usds.currentProportionality / 100;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-zinc-900">
@@ -192,27 +212,15 @@ export default async function Internal() {
         <div className="w-full mb-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <VaultItem
-              assetMetadata={CONTRACTS.ethereum.assets.usdc.metadata}
-              totalAssets={usdcTotalAssets}
-              price={usdcPrice}
-              vaultAddress={CONTRACTS.ethereum.vaults.usdc.address}
-              strategyAddress={CONTRACTS.ethereum.vaults.usdc.strategy.address}
+              mandatory={vaultsData.usdc}
               internal={internalVaultsData.usdc}
             />
             <VaultItem
-              assetMetadata={CONTRACTS.ethereum.assets.usdt.metadata}
-              totalAssets={usdtTotalAssets}
-              price={usdtPrice}
-              vaultAddress={CONTRACTS.ethereum.vaults.usdt.address}
-              strategyAddress={CONTRACTS.ethereum.vaults.usdt.strategy.address}
+              mandatory={vaultsData.usdt}
               internal={internalVaultsData.usdt}
             />
             <VaultItem
-              assetMetadata={CONTRACTS.ethereum.assets.usds.metadata}
-              totalAssets={usdsTotalAssets}
-              price={usdsPrice}
-              vaultAddress={CONTRACTS.ethereum.vaults.usds.address}
-              strategyAddress={CONTRACTS.ethereum.vaults.usds.strategy.address}
+              mandatory={vaultsData.usds}
               internal={internalVaultsData.usds}
             />
           </div>
